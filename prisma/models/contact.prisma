@@ -3,4 +3,7 @@ model Contact {
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
+
+  name String
+  avatar String?
 }
