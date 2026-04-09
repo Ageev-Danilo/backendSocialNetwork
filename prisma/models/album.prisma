@@ -1,0 +1,16 @@
+model Album {
+  id     Int    @id @default(autoincrement())
+  name   String
+  date   String
+  photos Photo @relation("AlbumPhoto")
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  posts Post[] @relation("PostAlbums")
+}
+
+model Photo {
+    id Int @id @default(autoincrement())
+    url String[]
+}

@@ -1,0 +1,13 @@
+model Profile {
+  id           Int      @id @default(autoincrement())
+  pseudonym    String   @unique
+  firstName    String
+  lastName     String
+  date         DateTime
+  username     String   @unique
+  signature    String?
+  profileImage String?
+
+  userId Int   @unique
+  user   User  @relation(fields: [userId], references: [id])
+}
