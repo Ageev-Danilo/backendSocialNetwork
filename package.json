@@ -4,7 +4,10 @@
   "description": "",
   "main": "ts-node index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,13 +20,24 @@
   },
   "homepage": "https://github.com/Ageev-Danilo/backendSocialNetwork#readme",
   "dependencies": {
+    "@prisma/adapter-libsql": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "envalid": "^8.1.1",
+    "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "prisma": "^7.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "ts-node-dev": "^2.0.0"
   }
 }
