@@ -1,9 +1,11 @@
 model Chat {
-  id     Int @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
 
-  lastMessageId Int?
-  lastMessage   Message?
+  messages Message[] @relation("ChatMessages")
+
+  lastMessageId Int?     @unique
+  lastMessage   Message? @relation("LastChatMessage", fields: [lastMessageId], references: [id])
 }

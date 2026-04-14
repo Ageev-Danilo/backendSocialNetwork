@@ -1,7 +1,9 @@
 model Message {
-    id        Int     @id @default(autoincrement())
-    text   String
-    
-    chatId    Int
-    chat      Chat @relation(fields: [chatId], references: [id])
+  id      Int    @id @default(autoincrement())
+  text    String
+  
+  chatId  Int
+  chat    Chat   @relation("ChatMessages", fields: [chatId], references: [id])
+
+  asLastInChat Chat? @relation("LastChatMessage")
 }
