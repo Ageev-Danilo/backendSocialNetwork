@@ -1,0 +1,32 @@
+model Post {
+  id      Int      @id @default(autoincrement())
+  title   String
+  content String
+  date    DateTime @default(now())
+  link    String?
+
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
+
+  media  PostMedia[]
+
+  albums Album[] @relation("PostAlbums")
+
+  likes  User[]  @relation("PostLikes")
+  views  User[]  @relation("PostViews")
+
+  tags   Tag[]
+}
+
+model PostMedia {
+  id     Int    @id @default(autoincrement())
+  url    String
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id])
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
