@@ -17,6 +17,7 @@ export const UserRepository: UserRepositoryContract = {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
+            console.log(error)
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
