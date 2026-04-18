@@ -7,7 +7,7 @@ export const SettingsController = {
     async getSettings(
         req: Request<object, any, object, object, AuthenticatedUser>,
         res: Response,
-        next,
+        next: NextFunction,
     ) {
         try {
             const data = await SettingsService.getSettings({ userId: res.locals.userId });
@@ -20,7 +20,7 @@ export const SettingsController = {
     async updateSettings(
         req: Request<object, { message: string }, any, object, AuthenticatedUser>,
         res: Response<{ message: string }>,
-        next,
+        next: NextFunction,
     ) {
         try {
             const result = await SettingsService.updateSettings({
