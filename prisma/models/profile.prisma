@@ -3,7 +3,7 @@ model Profile {
   pseudonym    String   @unique
   firstName    String
   lastName     String
-  date         DateTime
+  date         DateTime @default(now())
   username     String   @unique
   signature    String?
   profileImage String?

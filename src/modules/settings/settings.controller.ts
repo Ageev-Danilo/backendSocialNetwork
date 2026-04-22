@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { AuthenticatedUser } from '../../types/token.types';
 import { SettingsService } from './settings.service';
+import { SettingsCredentials } from './types/settings.types';
 
 export const SettingsController = {
 
@@ -23,10 +24,10 @@ export const SettingsController = {
         next: NextFunction,
     ) {
         try {
-            const result = await SettingsService.updateSettings({
-                userId: res.locals.userId,
-                ...req.body,
-            });
+            const result = await SettingsService.updateSettings(
+                2,
+                req.body,
+            );
 
             res.status(200).json(result);
         } catch (error) {

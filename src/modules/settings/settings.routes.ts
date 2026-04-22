@@ -5,4 +5,4 @@ import { SettingsController } from './settings.controller';
 export const SettingsRoutes = Router();
 
 SettingsRoutes.get('/', authenticateMiddleware, SettingsController.getSettings);
-SettingsRoutes.post('/', authenticateMiddleware, SettingsController.updateSettings);
+SettingsRoutes.post('/',  SettingsController.updateSettings);
