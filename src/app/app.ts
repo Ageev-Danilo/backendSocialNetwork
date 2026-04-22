@@ -4,7 +4,7 @@ import { env } from '../config/env';
 import { appRoutes } from './routes';
 import { errorHandlerMiddleware } from '../middlewares/error-handler.middleware';
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 app.use(express.json());
