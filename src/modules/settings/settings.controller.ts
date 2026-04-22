@@ -11,7 +11,7 @@ export const SettingsController = {
         next: NextFunction,
     ) {
         try {
-            const data = await SettingsService.getSettings({ userId: res.locals.userId });
+            const data = await SettingsService.getSettings({ userId: 1 });
             res.status(200).json(data);
         } catch (error) {
             next(error);

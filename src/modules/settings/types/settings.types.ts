@@ -1,8 +1,9 @@
 export interface SettingsCredentials{
-  pseudonym  :  string ;  
+  pseudonym  :  string;  
   firstName  :  string;
   lastName :    string;
-  username :    string ;  
+  date     :    string;
+  username :    string;  
   signature :   string;
   profileImage: string;
 

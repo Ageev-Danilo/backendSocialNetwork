@@ -21,6 +21,7 @@ export const SettingsRepository = {
 
     async update(userId: number, data: SettingsCredentials) {
         try {
+            console.log(userId)
             return await PrismaClient.profile.upsert({
                 where: { userId },
                 create: {
