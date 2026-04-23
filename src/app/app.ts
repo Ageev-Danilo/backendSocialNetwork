@@ -5,7 +5,7 @@ import { appRoutes } from './routes';
 import { errorHandlerMiddleware } from '../middlewares/error-handler.middleware';
 import { mailRouter } from '../modules/mail/mail.router';
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 app.use(express.json());
