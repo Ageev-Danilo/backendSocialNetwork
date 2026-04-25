@@ -6,10 +6,10 @@ import type { ProfileCredentials, User, UserCreateInput, UserWithPassword } from
 import { Profile } from '../../generated/prisma';
 
 const defaultData = {
-    name: '',
-    surname: '',
-    username: '',
-    avatar: '',
+    name: 'names',
+    surname: 'srnam',
+    username: 'abv',
+    avatar: 'url',
 };
 
 export const UserRepository: UserRepositoryContract = {
@@ -81,7 +81,10 @@ export const UserRepository: UserRepositoryContract = {
     async updateProfile(id, updateData) {
         try {
             if (updateData == null || Object.keys(updateData).length === 0) {
-                throw new ValidationError('NO_DATA_TO_UPDATE');
+                await PrismaClient.profile.update({
+                    where: { id },
+                    data: defaultData,
+                }) as Profile;
             }
             return await PrismaClient.profile.update({
                 where: { id },
