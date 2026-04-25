@@ -51,4 +51,13 @@ export const UserService: UserServiceContract = {
         }
         return user;
     },
+
+    async updateProfile(dto, data) {
+        const user = await UserRepository.findById(dto.userId);
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+        const updatedUser = await UserRepository.updateProfile(dto.userId, data);
+        return updatedUser;
+    },
 };

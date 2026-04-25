@@ -2,7 +2,15 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { InternalServerError, ValidationError } from '../../errors/app.errors';
 import { PrismaClient } from '../../prisma/client';
 import type { UserRepositoryContract } from './types/user.contracts';
-import type { User, UserCreateInput, UserWithPassword } from './types/user.types';
+import type { ProfileCredentials, User, UserCreateInput, UserWithPassword } from './types/user.types';
+import { Profile } from '../../generated/prisma';
+
+const defaultData = {
+    name: '',
+    surname: '',
+    username: '',
+    avatar: '',
+};
 
 export const UserRepository: UserRepositoryContract = {
 
@@ -69,4 +77,23 @@ export const UserRepository: UserRepositoryContract = {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
+
+    async updateProfile(id, updateData) {
+        try {
+            if (updateData == null || Object.keys(updateData).length === 0) {
+                throw new ValidationError('NO_DATA_TO_UPDATE');
+            }
+            return await PrismaClient.profile.update({
+                where: { id },
+                data: updateData,
+            }) as Profile;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
+                    throw new ValidationError('WRONG_QUERY');
+                }
+            }
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
+        }
+    }
 };
