@@ -9,6 +9,7 @@ import {
 import { env } from '../../config/env';
 import { UserRepository } from './user.repository';
 import type { UserServiceContract } from './types/user.contracts';
+import { ProfileCredentials } from './types/user.types';
 
 export const UserService: UserServiceContract = {
 
@@ -52,7 +53,7 @@ export const UserService: UserServiceContract = {
         return user;
     },
 
-    async updateProfile(dto, data) {
+    async updateProfile(dto: { userId: number }, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
         if (!user) {
             throw new NotFoundError('User');
