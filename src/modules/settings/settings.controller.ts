@@ -27,6 +27,7 @@ export const SettingsController = {
                 res.locals.userId,
                 req.body,
             );
+            console.log(res.locals.userId)
             res.status(200).json(result);
         } catch (error) {
             next(error);
