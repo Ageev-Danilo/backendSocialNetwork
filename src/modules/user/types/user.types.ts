@@ -34,3 +34,13 @@ export interface RegisterCredentials {
     surname: string;
     username: string;
 }
+
+export interface ProfileCredentials {
+    pseudonym: string;
+    firstName: string;
+    lastName: string;
+    date: Date;
+    username: string;
+    signature: string;
+    profileImage: string;
+}

@@ -9,6 +9,7 @@ import { join } from 'node:path';
 
 mkdirSync(join(uploadDir, 'original'),  { recursive: true });
 mkdirSync(join(uploadDir, 'thumbnail'), { recursive: true });
+import { userRoutes } from '../modules/user/user.routes';
 
 export const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/media', express.static(uploadDir)); 
 app.use(appRoutes);
 app.use(errorHandlerMiddleware);
+app.use(userRoutes);
 
 app.listen(env.PORT, env.HOST, () => {
     console.log(`Server running on http://${env.HOST}:${env.PORT}`);
