@@ -17,7 +17,7 @@ export const mailController = {
                  console.log(email)
 
             const code = await mailService.sendVerificationCode(email);
-            res.status(200).json({ code });
+            res.status(200).json({ code }); 
             console.log(code)
         } catch (error) {
             next(error);

@@ -33,7 +33,7 @@ export const PostController : PostsControlleContract = {
         next,
     ) {
         try {
-            const createPosts = await PostsService.createPost( {...req.body }, res.locals.userId);
+            const createPosts = await PostsService.createPost(res.locals.useId, {...req.body });
             res.status(200).json({
                 message: 'Post have been created'
             })

@@ -10,15 +10,16 @@ export const PostsService: PostsServiceContract = {
         const posts = await PostsRepository.getAllPost();
         return posts
     },
-    async getPostById(dto) {
+    async getPostById(dto: { userId: number }) {
         const user = await UserRepository.findById(dto.userId);
         if (!user) {
             throw new NotFoundError('User')
         }
+        console.log(dto.userId)
         const myPosts = await PostsRepository.getPostById(dto.userId);
         return myPosts
     },
-    async createPost(dto, userId ) {
+    async createPost(userId, dto ) {
         const createPosts = await PostsRepository.createPost(userId, dto);
         return { message: 'Post created' }
     }

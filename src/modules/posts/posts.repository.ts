@@ -30,7 +30,7 @@ export const PostsRepository: PostsRepositoryContract = {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
-
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
@@ -47,13 +47,13 @@ export const PostsRepository: PostsRepositoryContract = {
                     views: true,
                 },
             });
-
+            console.log(id)
             return posts.map(mapPost);
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
-
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
@@ -92,7 +92,7 @@ export const PostsRepository: PostsRepositoryContract = {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
-
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },

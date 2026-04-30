@@ -16,7 +16,7 @@ export const mailService = {
         await emailjs.send(
             SERVICE_ID,
             TEMPLATE_ID,
-            { to_email: toEmail, verification_code: code },
+            { to_email: toEmail, verification_code: code }, 
             { publicKey: PUBLIC_KEY, privateKey: PRIVATE_KEY },
         );
 

@@ -29,7 +29,7 @@ export interface PostsServiceContract {
         dto: { userId: number }
     ): Promise<Post[]>;
     createPost(
-        dto: PostCredentials, userId: number
+        userId: number, dto: PostCredentials
     ): Promise<{message: string}>
 }
 
