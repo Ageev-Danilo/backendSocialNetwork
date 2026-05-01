@@ -38,20 +38,30 @@ export const UserRepository: UserRepositoryContract = {
     },
 
     async findByEmail(email: string): Promise<User | null> {
-        try {
-            return (await PrismaClient.user.findFirst({
-                where: { email },
-                omit: { password: true },
-            })) as User | null;
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
-                    throw new ValidationError('WRONG_QUERY');
-                }
+    try {
+        return (await PrismaClient.user.findFirst({
+            where: { email },
+            select: {
+                id:        true,
+                email:     true,
+                name:      true,
+                surname:   true,
+                username:  true,
+                avatar:    true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        })) as User | null;
+    } catch (error) {
+        console.log('findByEmail error:', error); // ← додали
+        if (error instanceof PrismaClientKnownRequestError) {
+            if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
+                throw new ValidationError('WRONG_QUERY');
             }
-            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
-    },
+        throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
+    }
+},
 
     async create(data: UserCreateInput): Promise<User> {
         try {
@@ -65,7 +75,7 @@ export const UserRepository: UserRepositoryContract = {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
-            console.log()
+            console.log('create error:', error);
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },

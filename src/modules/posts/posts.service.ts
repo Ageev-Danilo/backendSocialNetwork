@@ -1,7 +1,7 @@
 import { NotFoundError } from "../../errors/app.errors";
 import { UserRepository } from "../user/user.repository";
 import { PostsRepository } from "./posts.repository";
-import { PostsRouter } from "./posts.router";
+//import { PostsRouter } from "./posts.router";
 import { PostsServiceContract } from "./types/posts.contracts";
 
 
@@ -13,14 +13,12 @@ export const PostsService: PostsServiceContract = {
     async getPostById(dto: { userId: number }) {
         const user = await UserRepository.findById(dto.userId);
         if (!user) {
-            throw new NotFoundError('User')
+            throw new NotFoundError('User');
         }
-        console.log(dto.userId)
-        const myPosts = await PostsRepository.getPostById(dto.userId);
-        return myPosts
+        return await PostsRepository.getPostById(dto.userId);
     },
-    async createPost(userId, dto ) {
-        const createPosts = await PostsRepository.createPost(userId, dto);
-        return { message: 'Post created' }
-    }
+
+    async createPost(userId: number, dto) {
+        return await PostsRepository.createPost(userId, dto);
+    },
 }
