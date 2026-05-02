@@ -1,10 +1,6 @@
 export interface User {
-    id: number;
-    email: string;
-    name: string;
-    surname: string;
-    username: string;
-    avatar: string | null;
+    id:        number;
+    email:     string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -14,33 +10,26 @@ export interface UserWithPassword extends User {
 }
 
 export interface UserCreateInput {
-    email: string;
+    email:    string;
     password: string;
-    name: string;
-    surname: string;
-    username: string;
-    avatar?: string | null;
 }
 
 export interface LoginCredentials {
-    email: string;
+    email:    string;
     password: string;
 }
 
 export interface RegisterCredentials {
-    email: string;
+    email:    string;
     password: string;
-    name: string;
-    surname: string;
-    username: string;
 }
 
 export interface ProfileCredentials {
-    pseudonym: string;
-    firstName: string;
-    lastName: string;
-    date: Date;
-    username: string;
-    signature: string;
+    pseudonym:    string;
+    firstName:    string;
+    lastName:     string;
+    date:         Date;
+    username:     string;
+    signature:    string;
     profileImage: string;
 }

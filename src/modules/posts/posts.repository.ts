@@ -65,21 +65,21 @@ export const PostsRepository: PostsRepositoryContract = {
                 userId,
             };
 
-            if (media?.length) {
-                createData.media = {
-                    create: media.map(({ url }) => ({
-                        url,
-                    })),
-                };
-            }
+            // if (media?.length) {
+            //     createData.media = {
+            //         create: media.map(({ url }) => ({
+            //             url,
+            //         })),
+            //     };
+            // }
 
-            if (tags?.length) {
-                createData.tags = {
-                    create: tags.map(({ name }) => ({
-                        name,
-                    })),
-                };
-            }
+            // if (tags?.length) {
+            //     createData.tags = {
+            //         create: tags.map(({ name }) => ({
+            //             name,
+            //         })),
+            //     };
+            // }
 
             await PrismaClient.post.create({
                 data: createData,
