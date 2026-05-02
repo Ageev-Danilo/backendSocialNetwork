@@ -11,13 +11,13 @@ import type {
 import { Profile } from '../../generated/prisma';
 
 const defaultData = {
-    pseudonym: 'danil',
-    firstName: 'danilov',
-    lastName: 'danilchik',
+    pseudonym: 'pseudonym',
+    firstName: 'firstName',
+    lastName: 'lastName',
     date: new Date(),
-    username: 'andrey',
-    signature: '6767',
-    profileImage: 'url',
+    username: 'username',
+    signature: 'yoursignature',
+    profileImage: 'image',
 };
 
 export const UserRepository: UserRepositoryContract = {
