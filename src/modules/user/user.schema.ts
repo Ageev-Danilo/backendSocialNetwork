@@ -22,11 +22,4 @@ export const regSchema = yup.object({
         .min(6, 'Min length must be > 6')
         .max(50, 'Max length must be < 50')
         .required('Field is required'),
-    name: yup.string().required('Field is required'),
-    surname: yup.string().required('Field is required'),
-    username: yup
-        .string()
-        .min(3, 'Min length must be > 3')
-        .max(50, 'Max length must be < 50')
-        .required('Field is required'),
 });

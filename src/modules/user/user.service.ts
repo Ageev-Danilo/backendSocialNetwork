@@ -9,19 +9,17 @@ import {
 import { env } from '../../config/env';
 import { UserRepository } from './user.repository';
 import type { UserServiceContract } from './types/user.contracts';
-import { ProfileCredentials } from './types/user.types';
+import type { ProfileCredentials } from './types/user.types';
 
 export const UserService: UserServiceContract = {
 
     async login(dto) {
         const user = await UserRepository.findByEmailWithPassword(dto.email);
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
+
         const isMatched = await compare(dto.password, user.password);
-        if (!isMatched) {
-            throw new AuthenticationError('Passwords do not match');
-        }
+        if (!isMatched) throw new AuthenticationError('Passwords do not match');
+
         const token = sign({ id: user.id }, env.SECRET_KEY, {
             expiresIn: env.TOKEN_TTL as StringValue,
         });
@@ -29,17 +27,16 @@ export const UserService: UserServiceContract = {
     },
 
     async register(dto) {
-        const existingUser = await UserRepository.findByEmail(dto.email);
-        if (existingUser) {
-            throw new ConflictError('User with such email');
-        }
+        const existing = await UserRepository.findByEmail(dto.email);
+        if (existing) throw new ConflictError('User with such email');
+
         const hashedPassword = await hash(dto.password, 10);
-        const createdUser = await UserRepository.create({
-            ...dto,
+        const created = await UserRepository.create({
+            email:    dto.email,
             password: hashedPassword,
-            avatar: dto.avatar ?? null,
         });
-        const token = sign({ id: createdUser.id }, env.SECRET_KEY, {
+
+        const token = sign({ id: created.id }, env.SECRET_KEY, {
             expiresIn: env.TOKEN_TTL as StringValue,
         });
         return { token };
@@ -47,18 +44,13 @@ export const UserService: UserServiceContract = {
 
     async me(dto) {
         const user = await UserRepository.findById(dto.userId);
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
         return user;
     },
 
-    async updateProfile(dto: { userId: number }, data: ProfileCredentials) {
+    async updateProfile(dto, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
-        if (!user) {
-            throw new NotFoundError('User');
-        }
-        const updatedUser = await UserRepository.updateProfile(dto.userId, data);
-        return updatedUser;
+        if (!user) throw new NotFoundError('User');
+        return await UserRepository.updateProfile(dto.userId, data);
     },
 };
