@@ -1,18 +1,21 @@
 import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import type { StringValue } from 'ms';
-import {
-    AuthenticationError,
-    ConflictError,
-    NotFoundError,
-} from '../../errors/app.errors';
+import { AuthenticationError, ConflictError, NotFoundError } from '../../errors/app.errors';
 import { env } from '../../config/env';
 import { UserRepository } from './user.repository';
 import type { UserServiceContract } from './types/user.contracts';
 import type { ProfileCredentials } from './types/user.types';
 
-export const UserService: UserServiceContract = {
+const defaultData = {
+    firstName: 'firstName',
+    lastName: 'lastName',
+    date: new Date(),
+    signature: 'yoursignature',
+    profileImage: 'image',
+};
 
+export const UserService: UserServiceContract = {
     async login(dto) {
         const user = await UserRepository.findByEmailWithPassword(dto.email);
         if (!user) throw new NotFoundError('User');
@@ -50,7 +53,18 @@ export const UserService: UserServiceContract = {
 
     async updateProfile(dto, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
+<<<<<<< HEAD
         if (!user) throw new NotFoundError('User');
         return await UserRepository.updateProfile(dto.userId, data);
+=======
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+
+        const updatedData = { ...defaultData, ...data };
+
+        const updatedUser = await UserRepository.updateProfile(dto.userId, updatedData);
+        return updatedUser;
+>>>>>>> Asvystun
     },
 };
