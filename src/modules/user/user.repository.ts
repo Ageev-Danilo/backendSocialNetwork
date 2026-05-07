@@ -2,9 +2,6 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { InternalServerError, ValidationError } from '../../errors/app.errors';
 import { PrismaClient } from '../../prisma/client';
 import type { UserRepositoryContract } from './types/user.contracts';
-<<<<<<< HEAD
-import type { User, UserCreateInput, UserWithPassword } from './types/user.types';
-=======
 import type {
     ProfileCredentials,
     User,
@@ -22,7 +19,6 @@ const defaultData = {
     signature: 'yoursignature',
     profileImage: 'image',
 };
->>>>>>> Asvystun
 
 export const UserRepository: UserRepositoryContract = {
 

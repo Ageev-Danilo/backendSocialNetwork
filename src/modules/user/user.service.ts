@@ -53,10 +53,6 @@ export const UserService: UserServiceContract = {
 
     async updateProfile(dto, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
-<<<<<<< HEAD
-        if (!user) throw new NotFoundError('User');
-        return await UserRepository.updateProfile(dto.userId, data);
-=======
         if (!user) {
             throw new NotFoundError('User');
         }
@@ -65,6 +61,5 @@ export const UserService: UserServiceContract = {
 
         const updatedUser = await UserRepository.updateProfile(dto.userId, updatedData);
         return updatedUser;
->>>>>>> Asvystun
     },
 };
