@@ -7,7 +7,7 @@ import { AlbumsControllerContract } from "./types/albums.contracts";
 export const AlbumsController: AlbumsControllerContract = {
     async getAlbumsByUserId(req, res, next) {
         try {
-            const albums = await AlbumsService.getAlbumsByUserId(res.locals.userId);
+            const albums = await AlbumsService.getAlbumsByUserId(5);
             res.status(200).json(albums);
         } catch (error) {
             next(error);
@@ -16,7 +16,7 @@ export const AlbumsController: AlbumsControllerContract = {
 
     async createAlbum(req, res, next) {
         try {
-            const result = await AlbumsService.createAlbum(res.locals.userId, req.body);
+            const result = await AlbumsService.createAlbum(5, req.body);
             res.status(201).json(result);
         } catch (error) {
             next(error);

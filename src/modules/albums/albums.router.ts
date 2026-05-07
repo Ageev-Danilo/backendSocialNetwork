@@ -4,5 +4,6 @@ import { AlbumsController } from './albums.controller';
 
 export const AlbumsRouter = Router();
 
-AlbumsRouter.get('/my-albums', authenticateMiddleware, AlbumsController.getAlbumsByUserId)
+AlbumsRouter.get('/my-albums',AlbumsController.getAlbumsByUserId)
+//  authenticateMiddleware, 
 AlbumsRouter.post('/create-album', AlbumsController.createAlbum)

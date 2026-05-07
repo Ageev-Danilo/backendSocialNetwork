@@ -17,6 +17,7 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
             });
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
+           
                 throw new ValidationError("WRONG_QUERY");
             }
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
@@ -28,14 +29,16 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
             await PrismaClient.album.create({
                 data: {
                     ...data,
-                    userId: 1
+                    userId: 5
                 }
             });
             return { message: "ALBUM_CREATED" };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
+                     console.log(error)
                 throw new ValidationError("WRONG_QUERY");
             }
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
