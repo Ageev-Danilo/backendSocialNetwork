@@ -40,7 +40,7 @@ export const UserRepository: UserRepositoryContract = {
 
     async create(data: UserCreateInput): Promise<User> {
         try {
-            return await PrismaClient.user.create({ data }) as User;
+            return await PrismaClient.user.create({ data }) as any as User;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
