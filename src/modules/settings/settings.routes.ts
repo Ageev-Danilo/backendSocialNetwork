@@ -11,6 +11,6 @@ SettingsRoutes.post(
     '/',
     authenticateMiddleware,
     uploadMiddleware.single('profileImage'), 
-    processImageMiddleware(false, 400, 85),  //400px
+    processImageMiddleware(false, 400, 85),
     SettingsController.updateSettings,
 );

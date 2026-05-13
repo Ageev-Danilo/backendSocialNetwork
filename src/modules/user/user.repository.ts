@@ -2,7 +2,23 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { InternalServerError, ValidationError } from '../../errors/app.errors';
 import { PrismaClient } from '../../prisma/client';
 import type { UserRepositoryContract } from './types/user.contracts';
-import type { User, UserCreateInput, UserWithPassword } from './types/user.types';
+import type {
+    ProfileCredentials,
+    User,
+    UserCreateInput,
+    UserWithPassword,
+} from './types/user.types';
+import { Profile } from '../../generated/prisma';
+
+const defaultData = {
+    pseudonym: 'pseudonym',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    date: new Date(),
+    username: 'username',
+    signature: 'yoursignature',
+    profileImage: 'image',
+};
 
 export const UserRepository: UserRepositoryContract = {
 
