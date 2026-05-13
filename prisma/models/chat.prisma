@@ -8,4 +8,4 @@ model Chat {
 
   lastMessageId Int?     @unique
   lastMessage   Message? @relation("LastChatMessage", fields: [lastMessageId], references: [id])
-}
+} 

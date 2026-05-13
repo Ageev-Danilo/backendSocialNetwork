@@ -48,6 +48,7 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },

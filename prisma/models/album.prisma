@@ -4,18 +4,17 @@ model Album {
   date   String
   theme  String 
   
-  photos Photo[] 
+  photos Photo[]
 
   userId Int
   user   User    @relation(fields: [userId], references: [id])
 
-  posts  Post[]  @relation("PostAlbums")
+  // posts  Post[]  @relation("PostAlbums")
 }
 
 model Photo {
   id      Int    @id @default(autoincrement())
   url     String 
-  
   albumId Int
   album   Album  @relation(fields: [albumId], references: [id])
 }
