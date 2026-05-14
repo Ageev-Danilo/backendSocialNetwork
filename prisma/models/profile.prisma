@@ -10,4 +10,7 @@ model Profile {
 
   userId Int   @unique
   user   User  @relation(fields: [userId], references: [id])
+
+  sentRequests     FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
 }
