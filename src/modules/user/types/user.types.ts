@@ -28,7 +28,7 @@ export interface ProfileCredentials {
     pseudonym:    string;
     firstName:    string;
     lastName:     string;
-    date:         Date;
+    date:         string;
     username:     string;
     signature:    string;
     profileImage: string;

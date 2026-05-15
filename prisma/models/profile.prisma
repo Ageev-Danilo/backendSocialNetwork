@@ -1,13 +1,13 @@
 model Profile {
-  id           Int      @id @default(autoincrement())
-  pseudonym    String   @unique
+  id           Int     @id @default(autoincrement())
+  pseudonym    String  @unique
   firstName    String
   lastName     String
-  date         DateTime @default(now())
-  username     String   @unique
+  date         String  // ← було DateTime, стало String
+  username     String  @unique
   signature    String?
   profileImage String?
 
-  userId Int   @unique
-  user   User  @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id])
 }

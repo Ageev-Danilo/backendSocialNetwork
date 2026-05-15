@@ -8,17 +8,6 @@ import type {
     UserCreateInput,
     UserWithPassword,
 } from './types/user.types';
-import { Profile } from '../../generated/prisma';
-
-const defaultData = {
-    pseudonym: 'pseudonym',
-    firstName: 'firstName',
-    lastName: 'lastName',
-    date: new Date(),
-    username: 'username',
-    signature: 'yoursignature',
-    profileImage: 'image',
-};
 
 export const UserRepository: UserRepositoryContract = {
 
@@ -92,9 +81,9 @@ export const UserRepository: UserRepositoryContract = {
                 where:  { userId: id },
                 update: { ...data },
                 create: {
-                    userId:   id,
+                    userId: id,
                     ...data,
-                    date:     data.date ?? new Date(),
+                    date:   data.date ?? '',   
                 },
             });
         } catch (error) {

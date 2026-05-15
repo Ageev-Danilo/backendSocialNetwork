@@ -4,11 +4,11 @@ import { PostsRepositoryContract } from "./types/posts.contracts";
 import { InternalServerError, ValidationError } from "../../errors/app.errors";
 
 const mapPost = (post: any) => {
-    const { likes, views, ...rest } = post;
+    const { ...rest } = post;
     return {
         ...rest,
-        likes: Array.isArray(likes) ? likes.length : likes ?? 0,
-        views: Array.isArray(views) ? views.length : views ?? 0,
+        likes: 0,   
+        views: 0,
     };
 };
 
@@ -18,48 +18,44 @@ const USER_SELECT = {
 
 export const PostsRepository: PostsRepositoryContract = {
     async getAllPost() {
-        try {
-            const posts = await PrismaClient.post.findMany({
-                take: 5,
-                orderBy: { id: 'desc' },
-                include: {
-                    user:  USER_SELECT,
-                    media: true,
-                    tags:  true,
-                    likes: true,
-                    views: true,
-                },
-            });
-            return posts.map(mapPost);
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
-            }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+    try {
+        const posts = await PrismaClient.post.findMany({
+            take:    5,
+            orderBy: { id: 'desc' },
+            include: {
+                user:  USER_SELECT,
+                media: true,
+                tags:  true,
+            },
+        });
+        return posts.map(mapPost);
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            throw new ValidationError("WRONG_QUERY");
         }
-    },
+        throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+    }
+},
 
-    async getPostById(userId: number) {
-        try {
-            const posts = await PrismaClient.post.findMany({
-                where:   { userId },          
-                orderBy: { id: 'desc' },
-                include: {
-                    user:  USER_SELECT,
-                    media: true,
-                    tags:  true,
-                    likes: true,
-                    views: true,
-                },
-            });
-            return posts.map(mapPost);
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
-            }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+async getPostById(userId: number) {
+    try {
+        const posts = await PrismaClient.post.findMany({
+            where:   { userId },
+            orderBy: { id: 'desc' },
+            include: {
+                user:  USER_SELECT,
+                media: true,
+                tags:  true,
+            },
+        });
+        return posts.map(mapPost);
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            throw new ValidationError("WRONG_QUERY");
         }
-    },
+        throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+    }
+},
 
     async createPost(userId: number, data) {
         try {
