@@ -1,14 +1,13 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import { PrismaClient } from "../../prisma/client";
-import { PostsRepositoryContract } from "./types/posts.contracts";
-import { InternalServerError, ValidationError } from "../../errors/app.errors";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { PrismaClient } from '../../prisma/client';
+import { PostsRepositoryContract } from './types/posts.contracts';
+import { InternalServerError, ValidationError } from '../../errors/app.errors';
 
 const mapPost = (post: any) => {
-    const { likes, views, ...rest } = post;
+    const { views, ...rest } = post;
     return {
         ...rest,
-        likes: Array.isArray(likes) ? likes.length : likes ?? 0,
-        views: Array.isArray(views) ? views.length : views ?? 0,
+        views: Array.isArray(views) ? views.length : (views ?? 0),
     };
 };
 
@@ -23,41 +22,39 @@ export const PostsRepository: PostsRepositoryContract = {
                 take: 5,
                 orderBy: { id: 'desc' },
                 include: {
-                    user:  USER_SELECT,
+                    user: USER_SELECT,
                     media: true,
-                    tags:  true,
-                    likes: true,
+                    tags: true,
                     views: true,
                 },
             });
             return posts.map(mapPost);
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
+                throw new ValidationError('WRONG_QUERY');
             }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
 
     async getPostById(userId: number) {
         try {
             const posts = await PrismaClient.post.findMany({
-                where:   { userId },          
+                where: { userId },
                 orderBy: { id: 'desc' },
                 include: {
-                    user:  USER_SELECT,
+                    user: USER_SELECT,
                     media: true,
-                    tags:  true,
-                    likes: true,
+                    tags: true,
                     views: true,
                 },
             });
             return posts.map(mapPost);
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
+                throw new ValidationError('WRONG_QUERY');
             }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
 
@@ -75,19 +72,19 @@ export const PostsRepository: PostsRepositoryContract = {
             if (tags?.length) {
                 createData.tags = {
                     connectOrCreate: tags.map(({ name }) => ({
-                        where:  { name },
+                        where: { name },
                         create: { name },
                     })),
                 };
             }
 
             await PrismaClient.post.create({ data: createData });
-            return { message: "POST_CREATED" };
+            return { message: 'POST_CREATED' };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
+                throw new ValidationError('WRONG_QUERY');
             }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
 };

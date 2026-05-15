@@ -1,13 +1,35 @@
-model Profile {
-  id           Int      @id @default(autoincrement())
-  pseudonym    String   @unique
-  firstName    String
-  lastName     String
-  date         DateTime @default(now())
-  username     String   @unique
-  signature    String?
-  profileImage String?
+enum FriendshipStatus {
+  pending
+  accepted
+}
 
-  userId Int   @unique
-  user   User  @relation(fields: [userId], references: [id])
+model Profile {
+  id               Int       @id @default(autoincrement())
+  signature        String?
+  birthDate        DateTime?
+  avatar           String?
+  pseudonym        String
+  isImageSignature Boolean   @default(false)
+  isTextSignature  Boolean   @default(true)
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  albums              Album[]
+  sentFriendships     Friendship[] @relation("SentFriendships")
+  receivedFriendships Friendship[] @relation("ReceivedFriendships")
+}
+
+model Friendship {
+  id        Int              @id @default(autoincrement())
+  status    FriendshipStatus @default(pending)
+  createdAt DateTime         @default(now())
+
+  fromProfileId Int
+  fromProfile   Profile @relation("SentFriendships", fields: [fromProfileId], references: [id])
+
+  toProfileId Int
+  toProfile   Profile @relation("ReceivedFriendships", fields: [toProfileId], references: [id])
+
+  @@unique([fromProfileId, toProfileId])
 }

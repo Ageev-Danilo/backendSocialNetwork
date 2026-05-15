@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const authenticate_middleware_1 = require("../../middlewares/authenticate.middleware");
+const validate_middleware_1 = require("../../middlewares/validate.middleware");
+const user_controller_1 = require("./user.controller");
+const user_schema_1 = require("./user.schema");
+exports.userRoutes = (0, express_1.Router)();
+exports.userRoutes.post('/login', (0, validate_middleware_1.validateMiddleware)(user_schema_1.loginSchema), user_controller_1.UserController.login);
+exports.userRoutes.post('/register', (0, validate_middleware_1.validateMiddleware)(user_schema_1.regSchema), user_controller_1.UserController.register);
+exports.userRoutes.get('/me', authenticate_middleware_1.authenticateMiddleware, user_controller_1.UserController.me);
+exports.userRoutes.put('/update-profile/', user_controller_1.UserController.updateProfile);
+exports.userRoutes.get('/update-profile/', user_controller_1.UserController.updateProfile);
+//# sourceMappingURL=user.routes.js.map
