@@ -11,6 +11,6 @@ model User {
   contacts Contact[]
   chats    Chat[]
 
-  // likedPosts  Post[] @relation("PostLikes")
-  // viewedPosts Post[] @relation("PostViews")
+   likedPosts  Post[] @relation("PostLikes")
+   viewedPosts Post[] @relation("PostViews")
 }

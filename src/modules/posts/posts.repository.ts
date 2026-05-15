@@ -26,8 +26,8 @@ export const PostsRepository: PostsRepositoryContract = {
                     user:  USER_SELECT,
                     media: true,
                     tags:  true,
-                    likes: true,
-                    views: true,
+                    // likes: true,
+                    // views: true,
                 },
             });
             return posts.map(mapPost);
@@ -35,6 +35,7 @@ export const PostsRepository: PostsRepositoryContract = {
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
+            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
@@ -48,8 +49,8 @@ export const PostsRepository: PostsRepositoryContract = {
                     user:  USER_SELECT,
                     media: true,
                     tags:  true,
-                    likes: true,
-                    views: true,
+                    // likes: true,
+                    // views: true,
                 },
             });
             return posts.map(mapPost);
