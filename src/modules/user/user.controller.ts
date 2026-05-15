@@ -1,9 +1,8 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { AuthenticatedUser } from '../../types/token.types';
 import type { UserControllerContract } from './types/user.contracts';
 import type { LoginCredentials, RegisterCredentials, User } from './types/user.types';
 import { UserService } from './user.service';
-
 
 export const UserController: UserControllerContract = {
 
@@ -49,7 +48,7 @@ export const UserController: UserControllerContract = {
     async updateProfile(req, res, next) {
         try {
             const updatedUser = await UserService.updateProfile(
-                { userId: 1 },
+                { userId: res.locals.userId }, 
                 req.body,
             );
             res.status(200).json(updatedUser);

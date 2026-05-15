@@ -8,11 +8,11 @@ import type { UserServiceContract } from './types/user.contracts';
 import type { ProfileCredentials } from './types/user.types';
 
 const defaultData = {
-    firstName: 'firstName',
-    lastName: 'lastName',
-    date: new Date(),
-    signature: 'yoursignature',
-    profileImage: 'image',
+    firstName:    '',
+    lastName:     '',
+    date:         '',    
+    signature:    '',
+    profileImage: '',
 };
 
 export const UserService: UserServiceContract = {
@@ -53,13 +53,14 @@ export const UserService: UserServiceContract = {
 
     async updateProfile(dto, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
 
-        const updatedData = { ...defaultData, ...data };
+        const updatedData: ProfileCredentials = {
+            ...defaultData,
+            ...data,
+            date: data.date ?? '',
+        };
 
-        const updatedUser = await UserRepository.updateProfile(dto.userId, updatedData);
-        return updatedUser;
+        return await UserRepository.updateProfile(dto.userId, updatedData);
     },
 };

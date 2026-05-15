@@ -13,4 +13,5 @@ model User {
 
    likedPosts  Post[] @relation("PostLikes")
    viewedPosts Post[] @relation("PostViews")
+
 }
