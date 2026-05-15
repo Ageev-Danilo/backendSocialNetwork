@@ -5,7 +5,7 @@ import { FriendsControllerContract } from "./types/friends.contracts";
 export const FriendsController: FriendsControllerContract = {
     async getFriendsById(req, res, next) {
         try {
-            const profileId = Number(req.params.id);
+            const profileId = res.locals.userId;
             const friends = await FriendsService.getFriendsById(profileId);
             res.status(200).json(friends);
         } catch (error) {
@@ -15,7 +15,13 @@ export const FriendsController: FriendsControllerContract = {
 
     async sendFriendRequest(req, res, next) {
         try {
-            const result = await FriendsService.sendFriendRequest(req.body);
+            console.log("USER ID:", res.locals.userId);
+            const senderId = res.locals.userId;
+            const result = await FriendsService.sendFriendRequest({
+                senderId,
+                receiverId: req.body.receiverId
+            });
+
             res.status(201).json(result);
         } catch (error) {
             next(error);

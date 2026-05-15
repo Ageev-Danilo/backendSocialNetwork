@@ -1,5 +1,9 @@
 export interface FriendRequestCredentials {
-    senderId:   number;
+    receiverId: number;
+}
+
+export interface SendFriendRequestDto {
+    senderId: number;
     receiverId: number;
 }
 

@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { PrismaClient } from "../../prisma/client";
 import { FriendsRepositoryContract } from "./types/friends.contracts";
-import { FriendRequestCredentials } from "./types/friends.types";
+import { FriendRequestCredentials, SendFriendRequestDto } from "./types/friends.types";
 import { InternalServerError, ValidationError } from "../../errors/app.errors";
 
 export const FriendsRepository: FriendsRepositoryContract = {
@@ -34,7 +34,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
         }
     },
 
-    async sendFriendRequest(data: FriendRequestCredentials) {
+    async sendFriendRequest(data: SendFriendRequestDto) {
         try {
             console.log('[DEBUG] Sending friend request:', JSON.stringify(data, null, 2));
 

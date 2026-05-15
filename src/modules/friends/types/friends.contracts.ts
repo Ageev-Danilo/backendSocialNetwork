@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AuthenticatedUser } from '../../../types/token.types';
-import type { FriendRequestCredentials, FriendRequest } from './friends.types';
+import type { FriendRequestCredentials, FriendRequest, SendFriendRequestDto} from './friends.types';
 
 export interface FriendsControllerContract {
     getFriendsById(
@@ -18,10 +18,10 @@ export interface FriendsControllerContract {
 
 export interface FriendsServiceContract {
     getFriendsById(profileId: number): Promise<any[]>;
-    sendFriendRequest(dto: FriendRequestCredentials): Promise<{ message: string }>;
+    sendFriendRequest(dto: SendFriendRequestDto): Promise<{ message: string }>;
 }
 
 export interface FriendsRepositoryContract {
     getFriendsById(profileId: number): Promise<any[]>;
-    sendFriendRequest(data: FriendRequestCredentials): Promise<{ message: string }>;
+    sendFriendRequest(data: SendFriendRequestDto): Promise<{ message: string }>;
 }
