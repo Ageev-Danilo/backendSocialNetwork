@@ -1,25 +1,25 @@
 import { Prisma } from "../../../generated/prisma";
 
-type profileMedia = Prisma.PostMediaGetPayload<{
-    
-}>;
-
-type Tag = Prisma.TagGetPayload<{}>
+type PostMedia = Prisma.PostMediaGetPayload<{}>;
+type Tag     = Prisma.TagGetPayload<{}>;
 
 export interface PostCredentials {
-    title: string;
+    title:   string;
     content: string;
-    date: Date;
-    media: profileMedia[];
-    tags: Tag[];
+    link?:   string;
+    media:   PostMedia[];
+    tags:    Tag[];
 }
 
 export interface Post {
-    title: string;
+    id:      number;
+    title:   string;
     content: string;
-    date: Date;
-    media: profileMedia[];
-    tags: Tag[];
-    likes: number;
-    views: number;
+    link:    string | null;
+    userId:  number;
+    user:    { id: number; email: string };
+    media:   PostMedia[];
+    tags:    Tag[];
+    likes:   number;
+    views:   number;
 }

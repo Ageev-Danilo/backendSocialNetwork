@@ -10,10 +10,7 @@ model Post {
 
   media  PostMedia[]
 
-  albums Album[] @relation("PostAlbums")
-
-  likes  User[]  @relation("PostLikes")
-  views  User[]  @relation("PostViews")
+ 
 
   tags   Tag[]
 }
