@@ -62,4 +62,9 @@ export const UserService: UserServiceContract = {
         const updatedUser = await UserRepository.updateProfile(dto.userId, updatedData);
         return updatedUser;
     },
+
+    async getSuggestions(name) {
+        const suggestions = await UserRepository.getSuggestions(name);
+        return suggestions;
+    }
 };

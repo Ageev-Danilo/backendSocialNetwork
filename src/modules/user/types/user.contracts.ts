@@ -34,6 +34,12 @@ export interface UserControllerContract {
         res: Response<any, AuthenticatedUser>,
         next: NextFunction,
     ): Promise<void>;
+
+    getSuggestions(
+        req: Request<object, { suggestions: string }, object, { name: string }, AuthenticatedUser>,
+        res: Response<{ suggestions: string }, AuthenticatedUser>,
+        next: NextFunction,
+    ): Promise<void>;
 }
 
 export interface UserServiceContract {
@@ -41,6 +47,7 @@ export interface UserServiceContract {
     register(dto: RegisterCredentials & { avatar?: string }): Promise<{ token: string }>;
     me(dto: { userId: number }): Promise<User>;
     updateProfile(dto: { userId: number }, data: ProfileCredentials): Promise<Profile>;
+    getSuggestions(name: string): Promise<string>;
 }
 
 export interface UserRepositoryContract {
@@ -49,4 +56,5 @@ export interface UserRepositoryContract {
     create(data: UserCreateInput): Promise<User>;
     findById(id: number): Promise<User>;
     updateProfile(id: number, data: ProfileCredentials): Promise<Profile>;
+    getSuggestions(name: string): Promise<string>;
 }

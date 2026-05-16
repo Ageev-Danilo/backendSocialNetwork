@@ -20,16 +20,17 @@ const defaultData = {
     profileImage: 'image',
 };
 
-export const UserRepository: UserRepositoryContract = {
-
+export const UserRepository: UserRepositoryContract & {
+    getSuggestions(name: string): Promise<string>;
+} = {
     async findByEmailWithPassword(email: string): Promise<UserWithPassword | null> {
         try {
-            return await PrismaClient.user.findFirst({
+            return (await PrismaClient.user.findFirst({
                 where: { email },
-            }) as UserWithPassword | null;
+            })) as UserWithPassword | null;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                if (['P2000','P2005','P2006','P2007','P2009'].includes(error.code)) {
+                if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
@@ -39,13 +40,13 @@ export const UserRepository: UserRepositoryContract = {
 
     async findByEmail(email: string): Promise<User | null> {
         try {
-            return await PrismaClient.user.findFirst({
-                where:  { email },
-                omit:   { password: true },
-            }) as User | null;
+            return (await PrismaClient.user.findFirst({
+                where: { email },
+                omit: { password: true },
+            })) as User | null;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                if (['P2000','P2005','P2006','P2007','P2009'].includes(error.code)) {
+                if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
@@ -55,14 +56,14 @@ export const UserRepository: UserRepositoryContract = {
 
     async create(data: UserCreateInput): Promise<User> {
         try {
-            return await PrismaClient.user.create({
+            return (await PrismaClient.user.create({
                 data,
                 omit: { password: true },
-            }) as User;
+            })) as User;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') throw new ValidationError('TOO_MUCH_VALUES');
-                if (['P2000','P2005','P2006','P2007'].includes(error.code)) {
+                if (['P2000', 'P2005', 'P2006', 'P2007'].includes(error.code)) {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
@@ -72,13 +73,13 @@ export const UserRepository: UserRepositoryContract = {
 
     async findById(id: number): Promise<User> {
         try {
-            return await PrismaClient.user.findFirstOrThrow({
+            return (await PrismaClient.user.findFirstOrThrow({
                 where: { id },
-                omit:  { password: true },
-            }) as User;
+                omit: { password: true },
+            })) as User;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                if (['P2000','P2005','P2006','P2007','P2009'].includes(error.code)) {
+                if (['P2000', 'P2005', 'P2006', 'P2007', 'P2009'].includes(error.code)) {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
@@ -89,14 +90,57 @@ export const UserRepository: UserRepositoryContract = {
     async updateProfile(id, data) {
         try {
             return await PrismaClient.profile.upsert({
-                where:  { userId: id },
-                update: { ...data },
+                where: {
+                    userId: id,
+                },
+                update: {
+                    birthDate: data.date,
+                    signature: data.signature,
+                    avatar: data.profileImage,
+                    pseudonym: data.pseudonym,
+                },
                 create: {
-                    userId:   id,
-                    ...data,
-                    date:     data.date ?? new Date(),
+                    userId: id,
+                    birthDate: data.date,
+                    signature: data.signature,
+                    avatar: data.profileImage,
+                    pseudonym: data.pseudonym,
                 },
             });
+        } catch (error) {
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
+        }
+    },
+    async getSuggestions(name) {
+        const baseUsername =
+            name
+                .trim()
+                .split(/\s+/)
+                .map(part => part.toLowerCase().replace(/[^a-z0-9]/g, ''))
+                .join('') || 'user';
+
+        const generateCandidate = () => `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+        let suggestion = generateCandidate();
+
+        try {
+            let exists = await PrismaClient.user.findFirst({
+                where: { username: suggestion },
+            });
+            let attempts = 0;
+
+            while (exists && attempts < 10) {
+                suggestion = generateCandidate();
+                exists = await PrismaClient.user.findFirst({
+                    where: { username: suggestion },
+                });
+                attempts += 1;
+            }
+
+            if (exists) {
+                suggestion = `${baseUsername}${Date.now().toString().slice(-4)}`;
+            }
+
+            return suggestion;
         } catch (error) {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
