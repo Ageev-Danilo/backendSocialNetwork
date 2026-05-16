@@ -8,7 +8,7 @@ const mapPost = (post) => {
     const { views, ...rest } = post;
     return {
         ...rest,
-        views: Array.isArray(views) ? views.length : views ?? 0,
+        views: Array.isArray(views) ? views.length : (views ?? 0),
     };
 };
 const USER_SELECT = {
@@ -24,7 +24,6 @@ exports.PostsRepository = {
                     user: USER_SELECT,
                     media: true,
                     tags: true,
-                    links: true,
                     views: true,
                 },
             });
@@ -32,9 +31,9 @@ exports.PostsRepository = {
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
-                throw new app_errors_1.ValidationError("WRONG_QUERY");
+                throw new app_errors_1.ValidationError('WRONG_QUERY');
             }
-            throw new app_errors_1.InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new app_errors_1.InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
     async getPostById(userId) {
@@ -46,7 +45,6 @@ exports.PostsRepository = {
                     user: USER_SELECT,
                     media: true,
                     tags: true,
-                    links: true,
                     views: true,
                 },
             });
@@ -54,14 +52,14 @@ exports.PostsRepository = {
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
-                throw new app_errors_1.ValidationError("WRONG_QUERY");
+                throw new app_errors_1.ValidationError('WRONG_QUERY');
             }
-            throw new app_errors_1.InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new app_errors_1.InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
     async createPost(userId, data) {
         try {
-            const { media, tags, links, ...postData } = data;
+            const { media, tags, ...postData } = data;
             const createData = { ...postData, userId };
             if (media?.length) {
                 createData.media = {
@@ -76,20 +74,14 @@ exports.PostsRepository = {
                     })),
                 };
             }
-            if (links?.length) {
-                createData.links = {
-                    create: links.map(({ url }) => ({ url })),
-                };
-            }
             await client_2.PrismaClient.post.create({ data: createData });
-            return { message: "POST_CREATED" };
+            return { message: 'POST_CREATED' };
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
-                throw new app_errors_1.ValidationError("WRONG_QUERY");
+                throw new app_errors_1.ValidationError('WRONG_QUERY');
             }
-            throw new app_errors_1.InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new app_errors_1.InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
 };
-//# sourceMappingURL=posts.repository.js.map

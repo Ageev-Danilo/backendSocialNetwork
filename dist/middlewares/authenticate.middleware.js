@@ -32,4 +32,3 @@ function authenticateMiddleware(req, res, next) {
         next(error);
     }
 }
-//# sourceMappingURL=authenticate.middleware.js.map

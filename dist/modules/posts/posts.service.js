@@ -20,4 +20,3 @@ exports.PostsService = {
         return await posts_repository_1.PostsRepository.createPost(userId, dto);
     },
 };
-//# sourceMappingURL=posts.service.js.map

@@ -57,4 +57,3 @@ exports.regSchema = yup.object({
         .max(50, 'Max length must be < 50')
         .required('Field is required'),
 });
-//# sourceMappingURL=user.schema.js.map

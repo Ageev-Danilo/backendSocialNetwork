@@ -14,8 +14,8 @@ exports.SettingsController = {
     },
     async updateSettings(req, res, next) {
         try {
-            const avatar = req.file?.filename ?? req.body.avatar ?? null;
-            const result = await settings_service_1.SettingsService.updateSettings(res.locals.userId, { ...req.body, avatar });
+            const profileImage = req.file?.filename ?? req.body.profileImage ?? null;
+            const result = await settings_service_1.SettingsService.updateSettings(res.locals.userId, { ...req.body, profileImage });
             console.log(res.locals.userId);
             res.status(200).json(result);
         }
@@ -24,4 +24,3 @@ exports.SettingsController = {
         }
     },
 };
-//# sourceMappingURL=settings.controller.js.map

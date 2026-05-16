@@ -20,4 +20,3 @@ exports.SettingsService = {
         return { message: 'Settings updated' };
     },
 };
-//# sourceMappingURL=settings.service.js.map

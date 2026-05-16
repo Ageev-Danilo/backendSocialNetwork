@@ -68,4 +68,3 @@ function processImageMiddleware(isRequired, width, quality = 80) {
         }
     };
 }
-//# sourceMappingURL=upload.middleware.js.map

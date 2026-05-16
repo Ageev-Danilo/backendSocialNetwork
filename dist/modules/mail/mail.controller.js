@@ -20,4 +20,3 @@ exports.mailController = {
         }
     },
 };
-//# sourceMappingURL=mail.controller.js.map

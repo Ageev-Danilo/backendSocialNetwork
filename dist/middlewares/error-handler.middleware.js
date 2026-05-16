@@ -16,4 +16,3 @@ function errorHandlerMiddleware(error, _req, res, _next) {
         message: 'Internal Server Error',
     });
 }
-//# sourceMappingURL=error-handler.middleware.js.map

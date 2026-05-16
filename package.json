@@ -2,12 +2,12 @@
     "name": "sn",
     "version": "1.0.0",
     "description": "",
-    "main": "ts-node index.js",
+    "main": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
         "build": "tsc",
-        "start": "ts-node src/app/app.ts"
+        "start": "node dist/index.js"
     },
     "repository": {
         "type": "git",

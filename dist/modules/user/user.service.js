@@ -7,9 +7,11 @@ const app_errors_1 = require("../../errors/app.errors");
 const env_1 = require("../../config/env");
 const user_repository_1 = require("./user.repository");
 const defaultData = {
+    firstName: 'firstName',
+    lastName: 'lastName',
+    date: new Date(),
     signature: 'yoursignature',
-    isTextSignature: true,
-    isImageSignature: false,
+    profileImage: 'image',
 };
 exports.UserService = {
     async login(dto) {
@@ -32,7 +34,6 @@ exports.UserService = {
         const created = await user_repository_1.UserRepository.create({
             email: dto.email,
             password: hashedPassword,
-            username: dto.username ?? null,
         });
         const token = (0, jsonwebtoken_1.sign)({ id: created.id }, env_1.env.SECRET_KEY, {
             expiresIn: env_1.env.TOKEN_TTL,
@@ -54,5 +55,8 @@ exports.UserService = {
         const updatedUser = await user_repository_1.UserRepository.updateProfile(dto.userId, updatedData);
         return updatedUser;
     },
+    async getSuggestions(name) {
+        const suggestions = await user_repository_1.UserRepository.getSuggestions(name);
+        return suggestions;
+    }
 };
-//# sourceMappingURL=user.service.js.map

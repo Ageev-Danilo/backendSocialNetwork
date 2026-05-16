@@ -39,5 +39,13 @@ exports.UserController = {
             next(error);
         }
     },
+    async getSuggestions(req, res, next) {
+        try {
+            const suggestions = await user_service_1.UserService.getSuggestions(req.query.name);
+            res.status(200).json({ suggestions });
+        }
+        catch (error) {
+            next(error);
+        }
+    },
 };
-//# sourceMappingURL=user.controller.js.map

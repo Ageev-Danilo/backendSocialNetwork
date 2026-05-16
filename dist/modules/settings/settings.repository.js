@@ -40,4 +40,3 @@ exports.SettingsRepository = {
         }
     },
 };
-//# sourceMappingURL=settings.repository.js.map

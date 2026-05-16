@@ -16,4 +16,3 @@ exports.mailService = {
         return code;
     },
 };
-//# sourceMappingURL=mail.service.js.map

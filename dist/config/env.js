@@ -11,4 +11,3 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     SECRET_KEY: (0, envalid_1.str)(),
     TOKEN_TTL: (0, envalid_1.str)({ default: '7d' }),
 });
-//# sourceMappingURL=env.js.map

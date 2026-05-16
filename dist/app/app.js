@@ -23,4 +23,3 @@ exports.app.use(error_handler_middleware_1.errorHandlerMiddleware);
 exports.app.listen(env_1.env.PORT, env_1.env.HOST, () => {
     console.log(`Server running on http://${env_1.env.HOST}:${env_1.env.PORT}`);
 });
-//# sourceMappingURL=app.js.map

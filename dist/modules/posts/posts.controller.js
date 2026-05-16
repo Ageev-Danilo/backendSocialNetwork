@@ -31,4 +31,3 @@ exports.PostController = {
         }
     },
 };
-//# sourceMappingURL=posts.controller.js.map

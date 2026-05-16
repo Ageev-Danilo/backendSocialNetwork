@@ -6,16 +6,19 @@ const app_errors_1 = require("../../errors/app.errors");
 const client_2 = require("../../prisma/client");
 const defaultData = {
     pseudonym: 'pseudonym',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    date: new Date(),
+    username: 'username',
     signature: 'yoursignature',
-    isTextSignature: true,
-    isImageSignature: false,
+    profileImage: 'image',
 };
 exports.UserRepository = {
     async findByEmailWithPassword(email) {
         try {
-            return await client_2.PrismaClient.user.findFirst({
+            return (await client_2.PrismaClient.user.findFirst({
                 where: { email },
-            });
+            }));
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
@@ -28,10 +31,10 @@ exports.UserRepository = {
     },
     async findByEmail(email) {
         try {
-            return await client_2.PrismaClient.user.findFirst({
+            return (await client_2.PrismaClient.user.findFirst({
                 where: { email },
                 omit: { password: true },
-            });
+            }));
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
@@ -44,10 +47,10 @@ exports.UserRepository = {
     },
     async create(data) {
         try {
-            return await client_2.PrismaClient.user.create({
+            return (await client_2.PrismaClient.user.create({
                 data,
                 omit: { password: true },
-            });
+            }));
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
@@ -62,10 +65,10 @@ exports.UserRepository = {
     },
     async findById(id) {
         try {
-            return await client_2.PrismaClient.user.findFirstOrThrow({
+            return (await client_2.PrismaClient.user.findFirstOrThrow({
                 where: { id },
                 omit: { password: true },
-            });
+            }));
         }
         catch (error) {
             if (error instanceof client_1.PrismaClientKnownRequestError) {
@@ -79,11 +82,21 @@ exports.UserRepository = {
     async updateProfile(id, data) {
         try {
             return await client_2.PrismaClient.profile.upsert({
-                where: { userId: id },
-                update: { ...data },
+                where: {
+                    userId: id,
+                },
+                update: {
+                    birthDate: data.date,
+                    signature: data.signature,
+                    avatar: data.profileImage,
+                    pseudonym: data.pseudonym,
+                },
                 create: {
                     userId: id,
-                    ...data,
+                    birthDate: data.date,
+                    signature: data.signature,
+                    avatar: data.profileImage,
+                    pseudonym: data.pseudonym,
                 },
             });
         }
@@ -91,5 +104,33 @@ exports.UserRepository = {
             throw new app_errors_1.InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
+    async getSuggestions(name) {
+        const baseUsername = name
+            .trim()
+            .split(/\s+/)
+            .map(part => part.toLowerCase().replace(/[^a-z0-9]/g, ''))
+            .join('') || 'user';
+        const generateCandidate = () => `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+        let suggestion = generateCandidate();
+        try {
+            let exists = await client_2.PrismaClient.user.findFirst({
+                where: { username: suggestion },
+            });
+            let attempts = 0;
+            while (exists && attempts < 10) {
+                suggestion = generateCandidate();
+                exists = await client_2.PrismaClient.user.findFirst({
+                    where: { username: suggestion },
+                });
+                attempts += 1;
+            }
+            if (exists) {
+                suggestion = `${baseUsername}${Date.now().toString().slice(-4)}`;
+            }
+            return suggestion;
+        }
+        catch (error) {
+            throw new app_errors_1.InternalServerError('UNHANDLED_DB_EXCEPTION');
+        }
+    },
 };
-//# sourceMappingURL=user.repository.js.map
