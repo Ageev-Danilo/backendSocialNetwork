@@ -55,8 +55,12 @@ export const UserController: UserControllerContract = {
 
     async getSuggestions(req, res, next) {
         try {
-            const suggestions = await UserService.getSuggestions(req.query.name);
-            res.status(200).json({ suggestions });
+            const name = req.body.name;
+
+            if (typeof name == 'string') {
+                const suggestions = await UserService.getSuggestions(name);
+                res.status(200).json({ suggestions });
+            }
         } catch (error) {
             next(error);
         }

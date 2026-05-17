@@ -1,15 +1,24 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaClient } from '../../prisma/client';
-import { ConflictError, InternalServerError, NotFoundError, ValidationError } from '../../errors/app.errors';
+import {
+    ConflictError,
+    InternalServerError,
+    NotFoundError,
+    ValidationError,
+} from '../../errors/app.errors';
 import type { FriendsRepositoryContract } from './types/friends.contracts';
-import type { ContactWithProfile, FriendRequestWithSender, ProfilePublic } from './types/friends.types';
+import type {
+    ContactWithProfile,
+    FriendRequestWithSender,
+    ProfilePublic,
+} from './types/friends.types';
 
 const PROFILE_SELECT = {
     id: true,
     pseudonym: true,
     signature: true,
-    birthDate: true,
-    avatar: true,
+    date: true,
+    profileImage: true,
     isImageSignature: true,
     isTextSignature: true,
 } as const;

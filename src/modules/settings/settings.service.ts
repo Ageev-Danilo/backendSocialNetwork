@@ -1,11 +1,12 @@
 import { error } from 'node:console';
 import { NotFoundError } from '../../errors/app.errors';
 import { SettingsRepository } from './settings.repository';
-import { SettingsCredentials } from './types/settings.types';
+import { SettingsServiceContract } from './types/settings.contracts';
 
-export const SettingsService = {
 
-    async getSettings(dto: { userId: number }) {
+export const SettingsService: SettingsServiceContract = {
+
+    async getSettings(dto) {
         const profile = await SettingsRepository.findByUserId(dto.userId);
 
         if (!profile) {
@@ -15,8 +16,8 @@ export const SettingsService = {
         return profile;
     },
 
-    async updateSettings(userId: number, dto: SettingsCredentials) {
-        // const user = await SettingsRepository.findByUserId(userId);
+    async updateSettings(userId, dto) {
+        //const user = await SettingsRepository.findByUserId(userId);
 
         // if (!user) {
         //      throw new NotFoundError('User');
