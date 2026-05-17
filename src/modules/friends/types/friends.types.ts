@@ -2,8 +2,8 @@ export interface ProfilePublic {
     id:               number;
     pseudonym:        string;
     signature:        string | null;
-    birthDate:        Date | null;
-    avatar:           string | null;
+    date?:        string | null;
+    profileImage:           string | null;
     isImageSignature: boolean;
     isTextSignature:  boolean;
 }

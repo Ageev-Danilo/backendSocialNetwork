@@ -36,7 +36,7 @@ export interface UserControllerContract {
     ): Promise<void>;
 
     getSuggestions(
-        req: Request<object, { suggestions: string }, object, { name: string }, AuthenticatedUser>,
+        req: Request<object, { suggestions: string }, { name: string }, object, AuthenticatedUser>,
         res: Response<{ suggestions: string }, AuthenticatedUser>,
         next: NextFunction,
     ): Promise<void>;

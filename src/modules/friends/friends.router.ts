@@ -10,23 +10,11 @@ import {
 
 export const friendsRouter = Router();
 
-friendsRouter.get(
-    '/recommendations',
-    // authenticateMiddleware,
-    FriendsController.getRecommendations,
-);
+friendsRouter.get('/recommendations', authenticateMiddleware, FriendsController.getRecommendations);
 
-friendsRouter.get(
-    '/',
-    // authenticateMiddleware,
-    FriendsController.getFriends,
-);
+friendsRouter.get('/', authenticateMiddleware, FriendsController.getFriends);
 
-friendsRouter.get(
-    '/requests',
-    // authenticateMiddleware,
-    FriendsController.getFriendRequests,
-);
+friendsRouter.get('/requests', authenticateMiddleware, FriendsController.getFriendRequests);
 
 friendsRouter.post(
     '/requests',

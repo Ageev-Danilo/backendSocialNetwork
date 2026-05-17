@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { InternalServerError, ValidationError } from '../../errors/app.errors';
-import { PrismaClient } from '../../prisma/client';
+
 import type { UserRepositoryContract } from './types/user.contracts';
 import type {
     ProfileCredentials,
@@ -8,7 +8,7 @@ import type {
     UserCreateInput,
     UserWithPassword,
 } from './types/user.types';
-import { Profile } from '../../generated/prisma';
+import { PrismaClient } from '../../prisma/client';
 
 const defaultData = {
     pseudonym: 'pseudonym',
@@ -89,22 +89,21 @@ export const UserRepository: UserRepositoryContract & {
 
     async updateProfile(id, data) {
         try {
+            const profilePayload = {
+                date: data.date ?? null,
+                signature: data.signature,
+                profileImage: data.profileImage ?? null,
+                pseudonym: data.pseudonym,
+            };
+
             return await PrismaClient.profile.upsert({
                 where: {
                     userId: id,
                 },
-                update: {
-                    birthDate: data.date,
-                    signature: data.signature,
-                    avatar: data.profileImage,
-                    pseudonym: data.pseudonym,
-                },
+                update: profilePayload,
                 create: {
                     userId: id,
-                    birthDate: data.date,
-                    signature: data.signature,
-                    avatar: data.profileImage,
-                    pseudonym: data.pseudonym,
+                    ...profilePayload,
                 },
             });
         } catch (error) {
@@ -112,6 +111,9 @@ export const UserRepository: UserRepositoryContract & {
         }
     },
     async getSuggestions(name) {
+        if (!name) {
+            throw new ValidationError('Name is required');
+        }
         const baseUsername =
             name
                 .trim()
