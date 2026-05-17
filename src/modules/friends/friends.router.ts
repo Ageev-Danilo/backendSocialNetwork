@@ -12,39 +12,39 @@ export const friendsRouter = Router();
 
 friendsRouter.get(
     '/recommendations',
-    authenticateMiddleware,
+    // authenticateMiddleware,
     FriendsController.getRecommendations,
 );
 
 friendsRouter.get(
     '/',
-    authenticateMiddleware,
+    // authenticateMiddleware,
     FriendsController.getFriends,
 );
 
 friendsRouter.get(
     '/requests',
-    authenticateMiddleware,
+    // authenticateMiddleware,
     FriendsController.getFriendRequests,
 );
 
 friendsRouter.post(
     '/requests',
-    authenticateMiddleware,
+    // authenticateMiddleware,
     validateMiddleware(createFriendRequestSchema),
     FriendsController.createFriendRequest,
 );
 
 friendsRouter.post(
     '/',
-    authenticateMiddleware,
+    // authenticateMiddleware, 
     validateMiddleware(acceptFriendSchema),
     FriendsController.acceptFriend,
 );
 
 friendsRouter.delete(
     '/',
-    authenticateMiddleware,
+    // authenticateMiddleware,                                                 
     validateMiddleware(deleteFriendSchema),
     FriendsController.deleteFriend,
 );

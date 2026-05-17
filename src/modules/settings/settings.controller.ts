@@ -26,7 +26,7 @@ export const SettingsController = {
             const profileImage = req.file?.filename ?? req.body.profileImage ?? null;
 
             const result = await SettingsService.updateSettings(
-                res.locals.userId,
+                1,
                 { ...req.body, profileImage },
             );
             console.log(res.locals.userId)

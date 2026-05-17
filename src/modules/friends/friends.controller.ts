@@ -11,7 +11,7 @@ import type {
 export const FriendsController: FriendsControllerContract = {
     async getRecommendations(req, res, next) {
         try {
-            const profiles = await FriendsService.getRecommendations(res.locals.userId);
+            const profiles = await FriendsService.getRecommendations(1);
             res.status(200).json(profiles);
         } catch (error) {
             next(error);
@@ -20,7 +20,7 @@ export const FriendsController: FriendsControllerContract = {
 
     async getFriends(req, res, next) {
         try {
-            const contacts = await FriendsService.getFriends(res.locals.userId);
+            const contacts = await FriendsService.getFriends(1);
             res.status(200).json(contacts);
         } catch (error) {
             next(error);
@@ -34,7 +34,7 @@ export const FriendsController: FriendsControllerContract = {
     ) {
         try {
             const result = await FriendsService.createFriendRequest(
-                res.locals.userId,
+                1,
                 req.body.receiverProfileId,
             );
             res.status(201).json(result);
@@ -50,7 +50,7 @@ export const FriendsController: FriendsControllerContract = {
     ) {
         try {
             const result = await FriendsService.acceptFriend(
-                res.locals.userId,
+                1,
                 req.body.senderProfileId,
             );
             res.status(201).json(result);
@@ -66,7 +66,7 @@ export const FriendsController: FriendsControllerContract = {
     ) {
         try {
             const result = await FriendsService.deleteFriend(
-                res.locals.userId,
+                1,
                 req.body.contactProfileId,
             );
             res.status(200).json(result);
@@ -77,7 +77,7 @@ export const FriendsController: FriendsControllerContract = {
 
     async getFriendRequests(req, res, next) {
         try {
-            const requests = await FriendsService.getFriendRequests(res.locals.userId);
+            const requests = await FriendsService.getFriendRequests(1);
             res.status(200).json(requests);
         } catch (error) {
             next(error);
