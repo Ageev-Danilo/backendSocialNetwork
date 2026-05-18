@@ -3,7 +3,7 @@ model Profile {
   pseudonym    String  @unique
   firstName    String
   lastName     String
-  date         String  // ← було DateTime, стало String
+  date         String  
   username     String  @unique
   signature    String?
   profileImage String?
