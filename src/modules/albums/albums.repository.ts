@@ -4,11 +4,33 @@ import { AlbumsRepositoryContract } from "./types/albums.contracts";
 import { AlbumCredentials, AlbumUpdateCredentials } from "./types/albums.types";
 import { InternalServerError, NotFoundError, ValidationError } from "../../errors/app.errors";
 
+async function getOrCreateProfile(userId: number): Promise<{ id: number }> {
+    let profile = await PrismaClient.profile.findUnique({
+        where:  { userId },
+        select: { id: true },
+    });
+
+    if (!profile) {
+        profile = await PrismaClient.profile.create({
+            data: {
+                userId,
+                pseudonym:    '',
+                signature:    '',
+                isImageSignature: false,
+                isTextSignature:  true,
+            },
+            select: { id: true },
+        });
+    }
+
+    return profile;
+}
+
 export const AlbumsRepository: AlbumsRepositoryContract = {
     async getAlbumsByUserId(userId: number) {
         try {
             const profile = await PrismaClient.profile.findUnique({
-                where: { userId },
+                where:  { userId },
                 select: { id: true },
             });
             if (!profile) return [];
@@ -28,11 +50,7 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
 
     async createAlbum(userId: number, data: AlbumCredentials) {
         try {
-            const profile = await PrismaClient.profile.findUnique({
-                where:  { userId },
-                select: { id: true },
-            });
-            if (!profile) throw new NotFoundError('Profile');
+            const profile = await getOrCreateProfile(userId); 
 
             const { images, ...albumData } = data;
 
@@ -48,7 +66,6 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
 
             return { message: "ALBUM_CREATED" };
         } catch (error) {
-            if (error instanceof NotFoundError) throw error;
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
@@ -58,11 +75,7 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
 
     async updateAlbum(albumId: number, userId: number, data: AlbumUpdateCredentials) {
         try {
-            const profile = await PrismaClient.profile.findUnique({
-                where:  { userId },
-                select: { id: true },
-            });
-            if (!profile) throw new NotFoundError('Profile');
+            const profile = await getOrCreateProfile(userId);
 
             const album = await PrismaClient.album.findFirst({
                 where: { id: albumId, profileId: profile.id },
