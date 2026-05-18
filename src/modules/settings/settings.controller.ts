@@ -14,10 +14,16 @@ export const SettingsController: SettingsControllerContract = {
     async updateSettings(req, res, next) {
         try {
             const profileImage = req.file?.filename ?? req.body.profileImage ?? null;
-            const result = await SettingsService.updateSettings(
-                res.locals.userId,
-                { ...req.body, profileImage },
-            );
+
+            const isImageSignature = (req.body.isImageSignature as unknown) === 'true' || req.body.isImageSignature === true;
+            const isTextSignature  = (req.body.isTextSignature as unknown) === 'true' || req.body.isTextSignature === true;
+
+            const result = await SettingsService.updateSettings(res.locals.userId, {
+                ...req.body,
+                profileImage,
+                isImageSignature,
+                isTextSignature,
+            });
             res.status(200).json(result);
         } catch (error) {
             next(error);
