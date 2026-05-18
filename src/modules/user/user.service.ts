@@ -8,11 +8,11 @@ import type { UserServiceContract } from './types/user.contracts';
 import type { ProfileCredentials } from './types/user.types';
 
 const defaultData = {
-    firstName:    '',
-    lastName:     '',
-    date:         '',    
-    signature:    '',
-    profileImage: '',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    date: new Date().toISOString(),
+    signature: 'yoursignature',
+    profileImage: 'image',
 };
 
 export const UserService: UserServiceContract = {
@@ -35,7 +35,7 @@ export const UserService: UserServiceContract = {
 
         const hashedPassword = await hash(dto.password, 10);
         const created = await UserRepository.create({
-            email:    dto.email,
+            email: dto.email,
             password: hashedPassword,
         });
 
@@ -55,12 +55,19 @@ export const UserService: UserServiceContract = {
         const user = await UserRepository.findById(dto.userId);
         if (!user) throw new NotFoundError('User');
 
+        const dateValue = data.date;
+        const isDate = (value: unknown): value is Date => value instanceof Date;
         const updatedData: ProfileCredentials = {
             ...defaultData,
             ...data,
-            date: data.date ?? '',
+            date: isDate(dateValue) ? dateValue.toISOString() : (dateValue ?? defaultData.date),
         };
 
         return await UserRepository.updateProfile(dto.userId, updatedData);
+    },
+
+    async getSuggestions(name) {
+        const suggestions = await UserRepository.getSuggestions(name);
+        return suggestions;
     },
 };

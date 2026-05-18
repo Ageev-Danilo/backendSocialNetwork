@@ -1,20 +1,24 @@
 model Album {
-  id     Int     @id @default(autoincrement())
-  name   String
-  date   String
-  theme  String 
-  
-  photos Photo[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  theme     String
+  year      Int
+  createdAt DateTime @default(now())
+  isShown   Boolean  @default(true)
+  isDefault Boolean  @default(false)
 
-  userId Int
-  user   User    @relation(fields: [userId], references: [id])
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id])
 
-  // posts  Post[]  @relation("PostAlbums")
+  images AlbumImage[]
 }
 
-model Photo {
-  id      Int    @id @default(autoincrement())
-  url     String 
+model AlbumImage {
+  id        Int      @id @default(autoincrement())
+  image     String
+  createdAt DateTime @default(now())
+  isShown   Boolean  @default(true)
+
   albumId Int
-  album   Album  @relation(fields: [albumId], references: [id])
+  album   Album @relation(fields: [albumId], references: [id])
 }

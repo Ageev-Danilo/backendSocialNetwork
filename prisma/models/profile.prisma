@@ -1,13 +1,43 @@
 model Profile {
-  id           Int     @id @default(autoincrement())
-  pseudonym    String  @unique
-  firstName    String
-  lastName     String
-  date         String  
-  username     String  @unique
-  signature    String?
-  profileImage String?
+  id               Int       @id @default(autoincrement())
+  signature        String
+  date        String?
+  profileImage           String?
+  pseudonym        String
+  isImageSignature Boolean   @default(false)
+  isTextSignature  Boolean   @default(true)
 
-  userId Int    @unique
-  user   User   @relation(fields: [userId], references: [id])
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  albums                 Album[]
+  ownedContacts          Contact[]       @relation("ContactOwner")
+  contactOf              Contact[]       @relation("ContactUser")
+  sentFriendRequests     FriendRequest[] @relation("FriendRequestSender")
+  receivedFriendRequests FriendRequest[] @relation("FriendRequestReceiver")
+}
+
+model Contact {
+  id Int @id @default(autoincrement())
+
+  ownerProfileId Int
+  ownerProfile   Profile @relation("ContactOwner", fields: [ownerProfileId], references: [id], onDelete: Cascade)
+
+  contactProfileId Int
+  contactProfile   Profile @relation("ContactUser", fields: [contactProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerProfileId, contactProfileId])
+}
+
+model FriendRequest {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  senderId Int
+  sender   Profile @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId Int
+  receiver   Profile @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
 }

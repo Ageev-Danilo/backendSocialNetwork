@@ -8,4 +8,3 @@ export const PostsRouter = Router();
 PostsRouter.get('/main', authenticateMiddleware, PostController.getAllPost)
 PostsRouter.get('/my-posts', authenticateMiddleware, PostController.getPostById)
 PostsRouter.post('/create-post', authenticateMiddleware, PostController.createPost)
-
