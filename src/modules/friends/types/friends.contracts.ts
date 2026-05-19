@@ -7,6 +7,8 @@ import type {
     DeleteFriendBody,
     FriendRequestWithSender,
     ProfilePublic,
+    PublicProfileData,
+    RejectFriendRequestBody,
 } from './friends.types';
 
 export interface FriendsControllerContract {
@@ -40,9 +42,21 @@ export interface FriendsControllerContract {
         next: NextFunction,
     ): Promise<void>;
 
+    rejectFriendRequest(
+        req: Request<object, { message: string }, RejectFriendRequestBody, object, AuthenticatedUser>,
+        res: Response<{ message: string }, AuthenticatedUser>,
+        next: NextFunction,
+    ): Promise<void>;
+
     getFriendRequests(
         req: Request<object, FriendRequestWithSender[], object, object, AuthenticatedUser>,
         res: Response<FriendRequestWithSender[], AuthenticatedUser>,
+        next: NextFunction,
+    ): Promise<void>;
+
+    getPublicProfile(
+        req: Request<{ profileId: string }, PublicProfileData, object, object, AuthenticatedUser>,
+        res: Response<PublicProfileData, AuthenticatedUser>,
         next: NextFunction,
     ): Promise<void>;
 }
@@ -53,7 +67,9 @@ export interface FriendsServiceContract {
     createFriendRequest(userId: number, receiverProfileId: number): Promise<{ message: string }>;
     acceptFriend(userId: number, senderProfileId: number): Promise<{ message: string }>;
     deleteFriend(userId: number, contactProfileId: number): Promise<{ message: string }>;
+    rejectFriendRequest(userId: number, senderProfileId: number): Promise<{ message: string }>;
     getFriendRequests(userId: number): Promise<FriendRequestWithSender[]>;
+    getPublicProfile(profileId: number): Promise<PublicProfileData>;
 }
 
 export interface FriendsRepositoryContract {
@@ -62,6 +78,8 @@ export interface FriendsRepositoryContract {
     createFriendRequest(senderProfileId: number, receiverProfileId: number): Promise<{ message: string }>;
     acceptFriend(ownerProfileId: number, senderProfileId: number): Promise<{ message: string }>;
     deleteFriend(ownerProfileId: number, contactProfileId: number): Promise<{ message: string }>;
+    rejectFriendRequest(receiverProfileId: number, senderProfileId: number): Promise<{ message: string }>;
     getFriendRequests(receiverProfileId: number): Promise<FriendRequestWithSender[]>;
+    getPublicProfile(profileId: number): Promise<PublicProfileData>;
     getProfileIdByUserId(userId: number): Promise<number | null>;
 }

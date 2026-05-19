@@ -1,12 +1,24 @@
-import { NotFoundError } from '../../errors/app.errors';
+import { PrismaClient } from '../../prisma/client';
 import { FriendsRepository } from './friends.repository';
 import type { FriendsServiceContract } from './types/friends.contracts';
 
 async function requireProfileId(userId: number): Promise<number> {
-    const profileId = await FriendsRepository.getProfileIdByUserId(userId);
+    let profileId = await FriendsRepository.getProfileIdByUserId(userId);
+
     if (!profileId) {
-        throw new NotFoundError('Profile');
+        const profile = await PrismaClient.profile.create({
+            data: {
+                userId,
+                pseudonym:        '',
+                signature:        '',
+                isImageSignature: false,
+                isTextSignature:  true,
+            },
+            select: { id: true },
+        });
+        profileId = profile.id;
     }
+
     return profileId;
 }
 
@@ -35,8 +47,17 @@ export const FriendsService: FriendsServiceContract = {
         return FriendsRepository.deleteFriend(ownerProfileId, contactProfileId);
     },
 
+    async rejectFriendRequest(userId, senderProfileId) {
+        const receiverProfileId = await requireProfileId(userId);
+        return FriendsRepository.rejectFriendRequest(receiverProfileId, senderProfileId);
+    },
+
     async getFriendRequests(userId) {
         const receiverProfileId = await requireProfileId(userId);
         return FriendsRepository.getFriendRequests(receiverProfileId);
+    },
+
+    async getPublicProfile(profileId) {
+        return FriendsRepository.getPublicProfile(profileId);
     },
 };

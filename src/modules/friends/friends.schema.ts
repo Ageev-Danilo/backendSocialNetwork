@@ -23,3 +23,11 @@ export const deleteFriendSchema = yup.object({
         .positive('Must be positive')
         .required('Field is required'),
 });
+
+export const rejectFriendRequestSchema = yup.object({
+    senderProfileId: yup
+        .number()
+        .integer('Must be an integer')
+        .positive('Must be positive')
+        .required('Field is required'),
+});

@@ -1,9 +1,10 @@
 export interface ProfilePublic {
     id:               number;
     pseudonym:        string;
+    username:         string | null;   
     signature:        string | null;
-    date?:        string | null;
-    profileImage:           string | null;
+    date?:            string | null;
+    profileImage:     string | null;
     isImageSignature: boolean;
     isTextSignature:  boolean;
 }
@@ -33,4 +34,33 @@ export interface AcceptFriendBody {
 
 export interface DeleteFriendBody {
     contactProfileId: number;
+}
+
+export interface RejectFriendRequestBody {
+    senderProfileId: number;
+}
+
+
+export interface PublicAlbum {
+    id:     number;
+    name:   string;
+    theme:  string;
+    year:   number;
+    images: { id: number; image: string }[];
+}
+
+export interface PublicPost {
+    id:        number;
+    title:     string;
+    content:   string;
+    createdAt: Date;
+    tags:      { id: number; name: string }[];
+    likes:     number;
+    views:     number;
+}
+
+export interface PublicProfileData {
+    profile:  ProfilePublic;
+    albums:   PublicAlbum[];
+    lastPost: PublicPost | null;
 }
