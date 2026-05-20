@@ -1,27 +1,23 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { PrismaClient } from "../../prisma/client";
 import { FriendsRepositoryContract } from "./types/friends.contracts";
-import { FriendRequestCredentials, SendFriendRequestDto } from "./types/friends.types";
+import { SendFriendRequestDto } from "./types/friends.types";
 import { InternalServerError, ValidationError } from "../../errors/app.errors";
 
 export const FriendsRepository: FriendsRepositoryContract = {
     async getFriendsById(profileId: number) {
         try {
-            const requests = await PrismaClient.friendRequest.findMany({
+            const contacts = await PrismaClient.contact.findMany({
                 where: {
-                    OR: [
-                        { senderId: profileId, status: "ACCEPTED" },
-                        { receiverId: profileId, status: "ACCEPTED" }
-                    ]
+                    contactOwnerId: profileId
                 },
                 include: {
-                    sender: true,
-                    receiver: true
+                    contactUser: true
                 }
             });
 
-            return requests.map(req => {
-                return req.senderId === profileId ? req.receiver : req.sender;
+            return contacts.map(contact => {
+                return contact.contactUser;
             });
         } catch (error) {
             console.log(error);
@@ -36,8 +32,6 @@ export const FriendsRepository: FriendsRepositoryContract = {
 
     async sendFriendRequest(data: SendFriendRequestDto) {
         try {
-            console.log('[DEBUG] Sending friend request:', JSON.stringify(data, null, 2));
-
             await PrismaClient.friendRequest.create({
                 data: {
                     senderId: data.senderId,
@@ -60,4 +54,73 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
+
+    async getAllProfiles() {
+        try {
+            return await PrismaClient.profile.findMany();
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+        }
+    },
+
+    async acceptFriendRequest(receiverId: number, senderId: number) {
+        try {
+            await PrismaClient.$transaction([
+                PrismaClient.friendRequest.deleteMany({
+                    where: {
+                        senderId: senderId,
+                        receiverId: receiverId
+                    }
+                }),
+                PrismaClient.contact.create({
+                    data: {
+                        contactOwnerId: receiverId,
+                        contactUserId: senderId
+                    }
+                })
+            ]);
+
+            return { message: "FRIEND_REQUEST_ACCEPTED" };
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+        }
+    },
+
+    async deleteFriend(ownerId: number, friendId: number) {
+        try {
+            await PrismaClient.contact.deleteMany({
+                where: {
+                    contactOwnerId: ownerId,
+                    contactUserId: friendId
+                }
+            });
+
+            return { message: "FRIEND_DELETED" };
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+        }
+    },
+
+    async getFriendRequests(profileId: number) {
+        try {
+            const requests = await PrismaClient.friendRequest.findMany({
+                where: {
+                    receiverId: profileId
+                },
+                include: {
+                    sender: true
+                }
+            });
+
+            return requests.map(request => {
+                return request.sender;
+            });
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+        }
+    }
 };

@@ -13,4 +13,7 @@ model Profile {
 
   sentRequests     FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
+
+  ownerContacts    Contact[]       @relation("OwnerContacts")
+  userContacts     Contact[]       @relation("UserContacts")
 }

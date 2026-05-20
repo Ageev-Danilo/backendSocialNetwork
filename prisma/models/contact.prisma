@@ -1,9 +1,9 @@
 model Contact {
-  id     Int @id @default(autoincrement())
+  id             Int @id @default(autoincrement())
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  contactOwnerId Int
+  contactOwner   Profile @relation("OwnerContacts", fields: [contactOwnerId], references: [id])
 
-  name String
-  avatar String?
+  contactUserId  Int
+  contactUser    Profile @relation("UserContacts", fields: [contactUserId], references: [id])
 }

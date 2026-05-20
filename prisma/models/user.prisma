@@ -13,8 +13,6 @@ model User {
   profile   Profile?
   posts     Post[]
   albums    Album[]
-
-  contacts  Contact[]
   chats     Chat[]
 
   likedPosts Post[] @relation("PostLikes")
