@@ -1,5 +1,3 @@
-// src/modules/friends/friends.router.ts
-
 import { Router } from 'express';
 import { authenticateMiddleware } from '../../middlewares/authenticate.middleware';
 import { validateMiddleware } from '../../middlewares/validate.middleware';
