@@ -4,23 +4,43 @@ import { AlbumsRepositoryContract } from "./types/albums.contracts";
 import { AlbumCredentials, AlbumUpdateCredentials } from "./types/albums.types";
 import { InternalServerError, NotFoundError, ValidationError } from "../../errors/app.errors";
 
-const USER_SELECT = {
-    select: { id: true, email: true },
-};
+async function getOrCreateProfile(userId: number): Promise<{ id: number }> {
+    let profile = await PrismaClient.profile.findUnique({
+        where:  { userId },
+        select: { id: true },
+    });
+
+    if (!profile) {
+        profile = await PrismaClient.profile.create({
+            data: {
+                userId,
+                pseudonym:    '',
+                signature:    '',
+                isImageSignature: false,
+                isTextSignature:  true,
+            },
+            select: { id: true },
+        });
+    }
+
+    return profile;
+}
 
 export const AlbumsRepository: AlbumsRepositoryContract = {
     async getAlbumsByUserId(userId: number) {
         try {
+            const profile = await PrismaClient.profile.findUnique({
+                where:  { userId },
+                select: { id: true },
+            });
+            if (!profile) return [];
+
             return await PrismaClient.album.findMany({
-                where:   { userId },
+                where:   { profileId: profile.id },
                 orderBy: { id: 'desc' },
-                include: {
-                    user:   USER_SELECT,
-                    photos: true,
-                },
+                include: { images: true },
             }) as any;
         } catch (error) {
-            console.log(error);
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
@@ -30,86 +50,81 @@ export const AlbumsRepository: AlbumsRepositoryContract = {
 
     async createAlbum(userId: number, data: AlbumCredentials) {
         try {
-            const { photos, ...albumData } = data;
+            const profile = await getOrCreateProfile(userId); 
+
+            const { images, ...albumData } = data;
 
             await PrismaClient.album.create({
                 data: {
                     ...albumData,
-                    userId,
-                    photos: {
-                        create: photos && photos.length > 0 ? photos : [],
-                    },
+                    profileId: profile.id,
+                    ...(images?.length && {
+                        images: { create: images },
+                    }),
                 },
             });
 
             return { message: "ALBUM_CREATED" };
         } catch (error) {
-            console.log(error);
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
-            console.log(error)
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
     },
 
     async updateAlbum(albumId: number, userId: number, data: AlbumUpdateCredentials) {
-    try {
-        const album = await PrismaClient.album.findFirst({
-            where: { id: albumId, userId },
-        });
-        if (!album) {
-            throw new NotFoundError('Album');
-        }
-        const { photos, ...albumData } = data;
-        const updatedAlbum = await PrismaClient.album.update({
-            where: { id: albumId },
-            data: {
-                ...albumData,
-                ...(photos && {
-                    photos: {
-                        create: photos
-                    }
-                })
-            },
-            include: {
-                photos: true
-            }
-        });
-        return { 
-            message: "ALBUM_UPDATED", 
-            album: updatedAlbum 
-        };
+        try {
+            const profile = await getOrCreateProfile(userId);
 
+            const album = await PrismaClient.album.findFirst({
+                where: { id: albumId, profileId: profile.id },
+            });
+            if (!album) throw new NotFoundError('Album');
+
+            const { images, ...albumData } = data;
+
+            await PrismaClient.album.update({
+                where: { id: albumId },
+                data: {
+                    ...albumData,
+                    ...(images?.length && {
+                        images: { create: images },
+                    }),
+                },
+            });
+
+            return { message: "ALBUM_UPDATED" };
         } catch (error) {
             if (error instanceof NotFoundError) throw error;
-            console.error("Update Album Error:", error);
             if (error instanceof PrismaClientKnownRequestError) {
                 throw new ValidationError("WRONG_QUERY");
             }
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
-        };
+        }
     },
 
     async deletePhoto(photoId: number, userId: number) {
         try {
-            const result = await PrismaClient.photo.deleteMany({
+            const profile = await PrismaClient.profile.findUnique({
+                where:  { userId },
+                select: { id: true },
+            });
+            if (!profile) throw new NotFoundError('Profile');
+
+            const result = await PrismaClient.albumImage.deleteMany({
                 where: {
-                    id: photoId,
-                    album: {
-                        userId: userId
-                    }
-                }
+                    id:    photoId,
+                    album: { profileId: profile.id },
+                },
             });
 
-            if (result.count === 0) {
-                throw new NotFoundError('Photo not found or access denied');
-            }
+            if (result.count === 0) throw new NotFoundError('Photo');
 
             return { message: "PHOTO_DELETED" };
         } catch (error) {
             if (error instanceof NotFoundError) throw error;
             throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
         }
-    }
-}
+    },
+};

@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AuthenticatedUser } from '../../../types/token.types';
-
 import { SettingsCredentials } from './settings.types';
 
 export interface SettingsControllerContract {
@@ -19,7 +18,7 @@ export interface SettingsControllerContract {
 
 export interface SettingsServiceContract {
     getSettings(dto: { userId: number }): Promise<any>;
-    updateSettings(dto: SettingsCredentials): Promise<{ message: string }>;
+    updateSettings(userId: number, dto: SettingsCredentials): Promise<{ message: string }>;
 }
 
 export interface SettingsRepositoryContract {

@@ -1,11 +1,12 @@
 model Chat {
-  id      Int      @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
+  name    String?
+  isGroup Boolean @default(false)
+  avatar  String?
 
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
+  adminId Int?
+  admin   User? @relation("ChatAdmin", fields: [adminId], references: [id])
 
-  messages Message[] @relation("ChatMessages")
-
-  lastMessageId Int?     @unique
-  lastMessage   Message? @relation("LastChatMessage", fields: [lastMessageId], references: [id])
-} 
+  users    User[]    @relation("ChatParticipants")
+  messages Message[]
+}

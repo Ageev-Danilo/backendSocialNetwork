@@ -1,9 +1,21 @@
 model Message {
-  id      Int    @id @default(autoincrement())
-  text    String
-  
-  chatId  Int
-  chat    Chat   @relation("ChatMessages", fields: [chatId], references: [id])
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
 
-  asLastInChat Chat? @relation("LastChatMessage")
+  chatId Int
+  chat   Chat @relation(fields: [chatId], references: [id])
+
+  senderId Int
+  sender   User @relation("MessageSender", fields: [senderId], references: [id])
+
+  readers User[]         @relation("MessageReaders")
+  images  MessageImage[]
+}
+
+model MessageImage {
+  id        Int    @id @default(autoincrement())
+  image     String
+  messageId Int
+  message   Message @relation(fields: [messageId], references: [id])
 }

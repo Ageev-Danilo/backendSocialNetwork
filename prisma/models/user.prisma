@@ -1,17 +1,18 @@
 model User {
   id        Int      @id @default(autoincrement())
+  firstName String?
+  lastName  String?
   email     String   @unique
+  username  String?  @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile  Profile?
-  posts    Post[]
-  albums   Album[]
-  contacts Contact[]
-  chats    Chat[]
-
-   likedPosts  Post[] @relation("PostLikes")
-   viewedPosts Post[] @relation("PostViews")
-
+  profile      Profile?
+  posts        Post[]
+  postViews    PostView[]
+  chats        Chat[]         @relation("ChatParticipants")
+  sentMessages Message[]      @relation("MessageSender")
+  readMessages Message[]      @relation("MessageReaders")
+  adminChats   Chat[]         @relation("ChatAdmin")
 }
