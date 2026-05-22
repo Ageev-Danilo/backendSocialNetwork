@@ -13,7 +13,7 @@ import type {
     ProfilePublic,
     PublicProfileData,
 } from './types/friends.types';
-
+ 
 const PROFILE_SELECT = {
     id:               true,
     pseudonym:        true,
@@ -24,7 +24,7 @@ const PROFILE_SELECT = {
     isTextSignature:  true,
     user:             { select: { username: true } },
 };
-
+ 
 function mapProfile(p: any): ProfilePublic {
     return {
         id:               p.id,
@@ -37,9 +37,9 @@ function mapProfile(p: any): ProfilePublic {
         isTextSignature:  p.isTextSignature,
     };
 }
-
+ 
 export const FriendsRepository: FriendsRepositoryContract = {
-
+ 
     async getProfileIdByUserId(userId: number) {
         const profile = await PrismaClient.profile.findUnique({
             where:  { userId },
@@ -47,13 +47,54 @@ export const FriendsRepository: FriendsRepositoryContract = {
         });
         return profile?.id ?? null;
     },
-
+ 
     async getRecommendations(userId: number): Promise<ProfilePublic[]> {
         try {
             const profileId = await this.getProfileIdByUserId(userId);
-            const where = profileId ? { id: { not: profileId } } : {};
+            if (!profileId) {
+                const profiles = await PrismaClient.profile.findMany({
+                    select:  PROFILE_SELECT,
+                    orderBy: { id: 'asc' },
+                });
+                return profiles.map(mapProfile);
+            }
+ 
+            const existingContacts = await PrismaClient.contact.findMany({
+                where: {
+                    OR: [
+                        { ownerProfileId:   profileId },
+                        { contactProfileId: profileId },
+                    ],
+                },
+                select: { ownerProfileId: true, contactProfileId: true },
+            });
+ 
+            const friendIds = new Set<number>();
+            for (const c of existingContacts) {
+                friendIds.add(c.ownerProfileId);
+                friendIds.add(c.contactProfileId);
+            }
+ 
+            const pendingRequests = await PrismaClient.friendRequest.findMany({
+                where: {
+                    OR: [
+                        { senderId:   profileId },
+                        { receiverId: profileId },
+                    ],
+                },
+                select: { senderId: true, receiverId: true },
+            });
+ 
+            const pendingIds = new Set<number>();
+            for (const r of pendingRequests) {
+                pendingIds.add(r.senderId);
+                pendingIds.add(r.receiverId);
+            }
+ 
+            const excludeIds = new Set([profileId, ...friendIds, ...pendingIds]);
+ 
             const profiles = await PrismaClient.profile.findMany({
-                where,
+                where:   { id: { notIn: [...excludeIds] } },
                 select:  PROFILE_SELECT,
                 orderBy: { id: 'asc' },
             });
@@ -63,7 +104,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
-
+ 
     async getFriends(ownerProfileId: number): Promise<ContactWithProfile[]> {
         try {
             const contacts = await PrismaClient.contact.findMany({
@@ -80,14 +121,14 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
-
+ 
     async createFriendRequest(senderProfileId: number, receiverProfileId: number) {
         try {
             if (senderProfileId === receiverProfileId) throw new ValidationError('CANNOT_REQUEST_SELF');
-
+ 
             const receiver = await PrismaClient.profile.findUnique({ where: { id: receiverProfileId } });
             if (!receiver) throw new NotFoundError('Profile');
-
+ 
             const existingContact = await PrismaClient.contact.findUnique({
                 where: {
                     ownerProfileId_contactProfileId: {
@@ -97,7 +138,17 @@ export const FriendsRepository: FriendsRepositoryContract = {
                 },
             });
             if (existingContact) throw new ConflictError('Contact');
-
+ 
+            const existingRequest = await PrismaClient.friendRequest.findFirst({
+                where: {
+                    OR: [
+                        { senderId: senderProfileId, receiverId: receiverProfileId },
+                        { senderId: receiverProfileId, receiverId: senderProfileId },
+                    ],
+                },
+            });
+            if (existingRequest) throw new ConflictError('FriendRequest');
+ 
             await PrismaClient.friendRequest.create({
                 data: { senderId: senderProfileId, receiverId: receiverProfileId },
             });
@@ -110,7 +161,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw error;
         }
     },
-
+ 
     async acceptFriend(ownerProfileId: number, senderProfileId: number) {
         try {
             const request = await PrismaClient.friendRequest.findUnique({
@@ -122,10 +173,13 @@ export const FriendsRepository: FriendsRepositoryContract = {
                 },
             });
             if (!request) throw new NotFoundError('FriendRequest');
-
+ 
             await PrismaClient.$transaction([
                 PrismaClient.contact.create({
                     data: { ownerProfileId, contactProfileId: senderProfileId },
+                }),
+                PrismaClient.contact.create({
+                    data: { ownerProfileId: senderProfileId, contactProfileId: ownerProfileId },
                 }),
                 PrismaClient.friendRequest.delete({ where: { id: request.id } }),
             ]);
@@ -138,7 +192,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw error;
         }
     },
-
+ 
     async rejectFriendRequest(receiverProfileId: number, senderProfileId: number) {
         try {
             const request = await PrismaClient.friendRequest.findUnique({
@@ -150,7 +204,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
                 },
             });
             if (!request) throw new NotFoundError('FriendRequest');
-
+ 
             await PrismaClient.friendRequest.delete({ where: { id: request.id } });
             return { message: 'FRIEND_REQUEST_REJECTED' };
         } catch (error) {
@@ -158,7 +212,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw error;
         }
     },
-
+ 
     async deleteFriend(ownerProfileId: number, contactProfileId: number) {
         try {
             const contact = await PrismaClient.contact.findUnique({
@@ -167,15 +221,23 @@ export const FriendsRepository: FriendsRepositoryContract = {
                 },
             });
             if (!contact) throw new NotFoundError('Contact');
-
-            await PrismaClient.contact.delete({ where: { id: contact.id } });
+ 
+            await PrismaClient.$transaction([
+                PrismaClient.contact.delete({ where: { id: contact.id } }),
+                PrismaClient.contact.deleteMany({
+                    where: {
+                        ownerProfileId:   contactProfileId,
+                        contactProfileId: ownerProfileId,
+                    },
+                }),
+            ]);
             return { message: 'FRIEND_REMOVED' };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) throw new ValidationError('WRONG_QUERY');
             throw error;
         }
     },
-
+ 
     async getFriendRequests(receiverProfileId: number): Promise<FriendRequestWithSender[]> {
         try {
             const requests = await PrismaClient.friendRequest.findMany({
@@ -192,8 +254,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
-
-
+ 
     async getPublicProfile(profileId: number): Promise<PublicProfileData> {
         try {
             const profile = await PrismaClient.profile.findUnique({
@@ -209,13 +270,13 @@ export const FriendsRepository: FriendsRepositoryContract = {
                 },
             });
             if (!profile) throw new NotFoundError('Profile');
-
+ 
             const lastPost = await PrismaClient.post.findFirst({
                 where:   { userId: (profile as any).userId },
                 orderBy: { id: 'desc' },
-                include: { tags: true, views: true },
+                include: { tags: true, views: true, media: true },
             });
-
+ 
             return {
                 profile:  mapProfile(profile),
                 albums:   (profile as any).albums ?? [],
@@ -226,6 +287,7 @@ export const FriendsRepository: FriendsRepositoryContract = {
                           content:   lastPost.content,
                           createdAt: lastPost.createdAt,
                           tags:      lastPost.tags,
+                          media:     lastPost.media,
                           likes:     0,
                           views:     Array.isArray(lastPost.views) ? lastPost.views.length : 0,
                       }
