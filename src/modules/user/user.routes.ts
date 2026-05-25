@@ -6,7 +6,8 @@ import { loginSchema, regSchema } from './user.schema';
 
 export const userRoutes = Router();
 
-userRoutes.post('/login',    validateMiddleware(loginSchema), UserController.login);
-userRoutes.post('/register', validateMiddleware(regSchema),   UserController.register);
-userRoutes.get('/me',        authenticateMiddleware,          UserController.me);
-userRoutes.put('/update-profile', authenticateMiddleware, UserController.updateProfile);
+userRoutes.post('/login', validateMiddleware(loginSchema), UserController.login);
+userRoutes.post('/register', validateMiddleware(regSchema), UserController.register);
+userRoutes.get('/me', authenticateMiddleware, UserController.me);
+userRoutes.put('/update-profile/', authenticateMiddleware, UserController.updateProfile);
+//userRoutes.post('/suggestions', authenticateMiddleware, UserController.getSuggestions);

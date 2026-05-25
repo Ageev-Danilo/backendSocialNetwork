@@ -5,7 +5,6 @@ import type { LoginCredentials, RegisterCredentials, User } from './types/user.t
 import { UserService } from './user.service';
 
 export const UserController: UserControllerContract = {
-
     async login(
         req: Request<object, { token: string }, LoginCredentials>,
         res: Response<{ token: string }>,
@@ -52,6 +51,19 @@ export const UserController: UserControllerContract = {
                 req.body,
             );
             res.status(200).json(updatedUser);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getSuggestions(req, res, next) {
+        try {
+            const name = req.body.name;
+
+            if (typeof name == 'string') {
+                const suggestions = await UserService.getSuggestions(name);
+                res.status(200).json({ suggestions });
+            }
         } catch (error) {
             next(error);
         }

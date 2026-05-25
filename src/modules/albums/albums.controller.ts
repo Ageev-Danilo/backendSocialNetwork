@@ -42,4 +42,17 @@ export const AlbumsController: AlbumsControllerContract = {
             next(error);
         }
     },
+
+    async uploadPhoto(req, res, next) {
+        try {
+            if (!req.file) {
+                res.status(400).json({ path: '' } as any);
+                return;
+            }
+            const relativePath = `/media/thumbnail/${req.file.filename}`;
+            res.status(200).json({ path: relativePath });
+        } catch (error) {
+            next(error);
+        }
+    },
 };

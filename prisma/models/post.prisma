@@ -1,19 +1,33 @@
 model Post {
-  id      Int      @id @default(autoincrement())
-  title   String
-  content String
-  date    DateTime @default(now())
-  link    String?
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
 
   userId Int
-  user   User    @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
-  media  PostMedia[]
+  media PostMedia[]
+  tags  Tag[]
+  links PostLink[]
+  views PostView[]
+}
 
-  likes  User[]  @relation("PostLikes")
-  views  User[]  @relation("PostViews")
+model PostLink {
+  id     Int    @id @default(autoincrement())
+  url    String
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id])
+}
 
-  tags   Tag[]
+model PostView {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+  postId Int
+  post   Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
 }
 
 model PostMedia {

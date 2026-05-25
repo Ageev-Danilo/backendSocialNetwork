@@ -1,6 +1,7 @@
 export interface User {
     id:        number;
     email:     string;
+    username:  string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -28,8 +29,8 @@ export interface ProfileCredentials {
     pseudonym:    string;
     firstName:    string;
     lastName:     string;
-    date:         string;
+    date?:         string;
     username:     string;
     signature:    string;
-    profileImage: string;
+    profileImage?: string;
 }

@@ -1,15 +1,15 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import { PrismaClient } from "../../prisma/client";
-import { PostsRepositoryContract } from "./types/posts.contracts";
-import { InternalServerError, ValidationError } from "../../errors/app.errors";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { PrismaClient } from '../../prisma/client';
+import { PostsRepositoryContract } from './types/posts.contracts';
+import { InternalServerError, ValidationError } from '../../errors/app.errors';
 
 const mapPost = (post: any) => {
-    const { ...rest } = post;
-    return {
-        ...rest,
-        likes: 0,   
-        views: 0,
-    };
+  const { views, ...rest } = post;
+  return {
+    ...rest,
+    likes: 0,
+    views: Array.isArray(views) ? views.length : (views ?? 0),
+  };
 };
 
 const USER_SELECT = {
@@ -19,21 +19,22 @@ const USER_SELECT = {
 export const PostsRepository: PostsRepositoryContract = {
     async getAllPost() {
     try {
-        const posts = await PrismaClient.post.findMany({
-            take:    5,
-            orderBy: { id: 'desc' },
-            include: {
-                user:  USER_SELECT,
-                media: true,
-                tags:  true,
-            },
-        });
+    const posts = await PrismaClient.post.findMany({
+        take: 5,
+        orderBy: { id: 'desc' },
+        include: {
+        user: USER_SELECT,
+        media: true,
+        tags: true,
+        views: true,
+        },
+    });
         return posts.map(mapPost);
     } catch (error) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            throw new ValidationError("WRONG_QUERY");
-        }
-        throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+    if (error instanceof PrismaClientKnownRequestError) {
+        throw new ValidationError('WRONG_QUERY');
+    }
+    throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
     }
 },
 
@@ -46,14 +47,15 @@ async getPostById(userId: number) {
                 user:  USER_SELECT,
                 media: true,
                 tags:  true,
+                links: true,  
             },
         });
         return posts.map(mapPost);
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
-            throw new ValidationError("WRONG_QUERY");
+            throw new ValidationError('WRONG_QUERY');
         }
-        throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+        throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
     }
 },
 
@@ -71,19 +73,19 @@ async getPostById(userId: number) {
             if (tags?.length) {
                 createData.tags = {
                     connectOrCreate: tags.map(({ name }) => ({
-                        where:  { name },
+                        where: { name },
                         create: { name },
                     })),
                 };
             }
 
             await PrismaClient.post.create({ data: createData });
-            return { message: "POST_CREATED" };
+            return { message: 'POST_CREATED' };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError("WRONG_QUERY");
+                throw new ValidationError('WRONG_QUERY');
             }
-            throw new InternalServerError("UNHANDLED_DB_EXCEPTION");
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
 };

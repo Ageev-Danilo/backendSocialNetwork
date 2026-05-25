@@ -1,23 +1,24 @@
 export interface AlbumCredentials {
     name:   string;
-    date:   string;
     theme:  string;
-    photos?: { url: string }[];
+    year:   number;         
+    images?: { image: string }[];  
 }
 
 export interface AlbumUpdateCredentials {
     name?:  string;
-    date?:  string;
     theme?: string;
-    photos?: { url: string }[];
+    year?:  number;
+    images?: { image: string }[];
 }
 
 export interface Album {
-    id:     number;
-    name:   string;
-    date:   string;
-    theme:  string;
-    photos: { id: number; url: string }[];
-    userId: number;
-    user:   { id: number; email: string };
+    id:        number;
+    name:      string;
+    theme:     string;
+    year:      number;
+    isShown:   boolean;
+    isDefault: boolean;
+    profileId: number;
+    images:    { id: number; image: string }[];
 }

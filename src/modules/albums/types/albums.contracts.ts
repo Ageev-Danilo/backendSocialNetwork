@@ -26,6 +26,11 @@ export interface AlbumsControllerContract {
         res: Response<{ message: string }, AuthenticatedUser>,
         next: NextFunction,
     ): Promise<void>;
+    uploadPhoto(
+        req: Request<object, { path: string }, object, object, AuthenticatedUser>,
+        res: Response<{ path: string }, AuthenticatedUser>,
+        next: NextFunction,
+    ): Promise<void>;
 }
 
 export interface AlbumsServiceContract {
