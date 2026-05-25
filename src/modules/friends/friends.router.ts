@@ -18,14 +18,14 @@ friendsRouter.get('/',                authenticateMiddleware, FriendsController.
 
 friendsRouter.post(
     '/requests',
-    authenticateMiddleware,
+    // authenticateMiddleware,
     validateMiddleware(createFriendRequestSchema),
     FriendsController.createFriendRequest,
 );
 
 friendsRouter.post(
     '/',
-    authenticateMiddleware,
+    // authenticateMiddleware, 
     validateMiddleware(acceptFriendSchema),
     FriendsController.acceptFriend,
 );
@@ -39,7 +39,7 @@ friendsRouter.delete(
 
 friendsRouter.delete(
     '/',
-    authenticateMiddleware,
+    // authenticateMiddleware,                                                 
     validateMiddleware(deleteFriendSchema),
     FriendsController.deleteFriend,
 );
