@@ -16,6 +16,7 @@ import type {
  
 const PROFILE_SELECT = {
     id:               true,
+    userId:           true,
     pseudonym:        true,
     signature:        true,
     date:             true,
@@ -24,10 +25,11 @@ const PROFILE_SELECT = {
     isTextSignature:  true,
     user:             { select: { username: true } },
 };
- 
+
 function mapProfile(p: any): ProfilePublic {
     return {
         id:               p.id,
+        userId:           p.userId,
         pseudonym:        p.pseudonym,
         username:         p.user?.username ?? null,
         signature:        p.signature,

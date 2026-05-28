@@ -6,6 +6,7 @@ import { AlbumsRouter } from '../modules/albums/albums.router';
 import { mailRouter } from '../modules/mail/mail.router';
 import { PostsRouter } from '../modules/posts/posts.router';
 import { friendsRouter } from '../modules/friends/friends.router';
+import { chatRouter } from '../modules/chat/chat.router';
 
 export const appRoutes = Router();
 
@@ -17,6 +18,7 @@ appRoutes.use('/settings', SettingsRoutes);
 appRoutes.use('/mail', mailRouter);
 appRoutes.use('/posts', PostsRouter);
 appRoutes.use('/friends', friendsRouter);
+appRoutes.use('/chats', chatRouter);
 
 appRoutes.get('/health', (_req, res) => {
     res.json({ status: 'OK', timestamp: Date.now() });
