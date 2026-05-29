@@ -13,6 +13,7 @@ export interface ChatUser {
     id: number;
     email: string;
     username?: string | null;
+    profileImage: string | null;
 }
 
 export interface ChatDto {

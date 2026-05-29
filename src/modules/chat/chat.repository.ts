@@ -16,9 +16,32 @@ function buildChatSelect() {
                 id: true,
                 email: true,
                 username: true,
+                profile: {
+                    select: { profileImage: true },
+                },
             },
         },
     } as const;
+}
+
+function mapChatUsers(users: { id: number; email: string; username: string | null; profile: { profileImage: string | null } | null }[]) {
+    return users.map(u => ({
+        id:           u.id,
+        email:        u.email,
+        username:     u.username,
+        profileImage: u.profile?.profileImage ?? null,
+    }));
+}
+
+function mapChat(raw: any): ChatDto {
+    return {
+        id:      raw.id,
+        name:    raw.name ?? null,
+        isGroup: raw.isGroup,
+        avatar:  raw.avatar ?? null,
+        adminId: raw.adminId ?? null,
+        users:   mapChatUsers(raw.users),
+    };
 }
 
 export const ChatRepository: ChatRepositoryContract = {
@@ -34,22 +57,17 @@ export const ChatRepository: ChatRepositoryContract = {
                 },
             };
 
-            if (dto.name !== undefined) {
-                createData.name = dto.name;
-            }
-            if (dto.avatar !== undefined) {
-                createData.avatar = dto.avatar;
-            }
+            if (dto.name !== undefined) createData.name = dto.name;
+            if (dto.avatar !== undefined) createData.avatar = dto.avatar;
 
-            return await PrismaClient.chat.create({
+            const raw = await PrismaClient.chat.create({
                 data: createData,
                 select: buildChatSelect(),
             });
+            return mapChat(raw);
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === 'P2003') {
-                    throw new ValidationError('One or more users were not found');
-                }
+                if (error.code === 'P2003') throw new ValidationError('One or more users were not found');
                 throw new ValidationError('WRONG_QUERY');
             }
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
@@ -62,21 +80,13 @@ export const ChatRepository: ChatRepositoryContract = {
                 where: { id: chatId, users: { some: { id: senderId } } },
                 select: { id: true },
             });
-            if (!chat) {
-                throw new NotFoundError('Chat');
-            }
+            if (!chat) throw new NotFoundError('Chat');
 
             await PrismaClient.message.create({
-                data: {
-                    text: dto.text,
-                    chatId,
-                    senderId,
-                },
+                data: { text: dto.text, chatId, senderId },
             });
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError('WRONG_QUERY');
-            }
+            if (error instanceof PrismaClientKnownRequestError) throw new ValidationError('WRONG_QUERY');
             throw error;
         }
     },
@@ -87,11 +97,9 @@ export const ChatRepository: ChatRepositoryContract = {
                 where: { id: chatId, users: { some: { id: userId } } },
                 select: { id: true },
             });
-            if (!chat) {
-                throw new NotFoundError('Chat');
-            }
+            if (!chat) throw new NotFoundError('Chat');
 
-            return await PrismaClient.message.findMany({
+            const messages = await PrismaClient.message.findMany({
                 where: { chatId },
                 include: {
                     sender: {
@@ -99,30 +107,40 @@ export const ChatRepository: ChatRepositoryContract = {
                             id: true,
                             email: true,
                             username: true,
+                            profile: { select: { profileImage: true } },
                         },
                     },
                 },
                 orderBy: { createdAt: 'asc' },
             });
+
+            return messages.map(m => ({
+                id:        m.id,
+                text:      m.text ?? '',
+                createdAt: m.createdAt,
+                sender: {
+                    id:           m.sender.id,
+                    email:        m.sender.email,
+                    username:     m.sender.username ?? null,
+                    profileImage: (m.sender as any).profile?.profileImage ?? null,
+                },
+            }));
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError('WRONG_QUERY');
-            }
+            if (error instanceof PrismaClientKnownRequestError) throw new ValidationError('WRONG_QUERY');
             throw error;
         }
     },
 
     async getChatsByUserId(userId) {
         try {
-            return await PrismaClient.chat.findMany({
+            const raws = await PrismaClient.chat.findMany({
                 where: { users: { some: { id: userId } } },
                 select: buildChatSelect(),
                 orderBy: { id: 'desc' },
             });
+            return raws.map(mapChat);
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                throw new ValidationError('WRONG_QUERY');
-            }
+            if (error instanceof PrismaClientKnownRequestError) throw new ValidationError('WRONG_QUERY');
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
