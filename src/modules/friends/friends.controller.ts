@@ -28,7 +28,13 @@ export const FriendsController: FriendsControllerContract = {
     },
 
     async createFriendRequest(
-        req: Request<object, { message: string }, CreateFriendRequestBody, object, AuthenticatedUser>,
+        req: Request<
+            object,
+            { message: string },
+            CreateFriendRequestBody,
+            object,
+            AuthenticatedUser
+        >,
         res: Response<{ message: string }, AuthenticatedUser>,
         next: NextFunction,
     ) {
@@ -79,6 +85,20 @@ export const FriendsController: FriendsControllerContract = {
         try {
             const requests = await FriendsService.getFriendRequests(res.locals.userId);
             res.status(200).json(requests);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getPublicProfile(req, res, next) {
+        try {
+            const profileId = parseInt(req.params.profileId, 10);
+            if (isNaN(profileId)) {
+                res.status(400).json({ message: 'Invalid profile ID' } as any);
+                return;
+            }
+            const profile = await FriendsService.getPublicProfile(profileId);
+            res.status(200).json(profile);
         } catch (error) {
             next(error);
         }

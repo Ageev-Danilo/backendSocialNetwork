@@ -16,6 +16,12 @@ friendsRouter.get('/', authenticateMiddleware, FriendsController.getFriends);
 
 friendsRouter.get('/requests', authenticateMiddleware, FriendsController.getFriendRequests);
 
+friendsRouter.get(
+    '/profile/:profileId',
+    authenticateMiddleware,
+    FriendsController.getPublicProfile,
+);
+
 friendsRouter.post(
     '/requests',
     authenticateMiddleware,

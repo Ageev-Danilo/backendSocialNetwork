@@ -39,4 +39,8 @@ export const FriendsService: FriendsServiceContract = {
         const receiverProfileId = await requireProfileId(userId);
         return FriendsRepository.getFriendRequests(receiverProfileId);
     },
+
+    async getPublicProfile(profileId) {
+        return FriendsRepository.getPublicProfile(profileId);
+    },
 };

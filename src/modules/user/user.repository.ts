@@ -57,16 +57,29 @@ export const UserRepository: UserRepositoryContract & {
     async create(data: UserCreateInput): Promise<User> {
         try {
             return (await PrismaClient.user.create({
-                data,
+                data: {
+                    ...data,
+                    profile: {
+                        create: {
+                            pseudonym: 'Test User',
+                            signature: 'usrtest',
+                        },
+                    },
+                },
                 omit: { password: true },
+                include: {
+                    profile: true,
+                },
             })) as User;
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') throw new ValidationError('TOO_MUCH_VALUES');
+
                 if (['P2000', 'P2005', 'P2006', 'P2007'].includes(error.code)) {
                     throw new ValidationError('WRONG_QUERY');
                 }
             }
+
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },

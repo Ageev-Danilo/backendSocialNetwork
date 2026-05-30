@@ -45,6 +45,12 @@ export interface FriendsControllerContract {
         res: Response<FriendRequestWithSender[], AuthenticatedUser>,
         next: NextFunction,
     ): Promise<void>;
+
+    getPublicProfile(
+        req: Request<{ profileId: string }, ProfilePublic, object, object, AuthenticatedUser>,
+        res: Response<ProfilePublic, AuthenticatedUser>,
+        next: NextFunction,
+    ): Promise<void>;
 }
 
 export interface FriendsServiceContract {
@@ -53,6 +59,7 @@ export interface FriendsServiceContract {
     createFriendRequest(userId: number, receiverProfileId: number): Promise<{ message: string }>;
     acceptFriend(userId: number, senderProfileId: number): Promise<{ message: string }>;
     deleteFriend(userId: number, contactProfileId: number): Promise<{ message: string }>;
+    getPublicProfile(profileId: number): Promise<ProfilePublic>;
     getFriendRequests(userId: number): Promise<FriendRequestWithSender[]>;
 }
 
@@ -64,4 +71,5 @@ export interface FriendsRepositoryContract {
     deleteFriend(ownerProfileId: number, contactProfileId: number): Promise<{ message: string }>;
     getFriendRequests(receiverProfileId: number): Promise<FriendRequestWithSender[]>;
     getProfileIdByUserId(userId: number): Promise<number | null>;
+    getPublicProfile(profileId: number): Promise<ProfilePublic>;
 }

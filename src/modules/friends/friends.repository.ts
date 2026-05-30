@@ -181,4 +181,23 @@ export const FriendsRepository: FriendsRepositoryContract = {
             throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
         }
     },
+
+    async getPublicProfile(profileId: number): Promise<ProfilePublic> {
+        try {
+            const profile = await PrismaClient.profile.findUnique({
+                where: { id: profileId },
+                select: PROFILE_SELECT,
+            });
+            if (!profile) {
+                throw new NotFoundError('Profile');
+            }
+            return profile;
+        }
+        catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                throw new ValidationError('WRONG_QUERY');
+            }
+            throw new InternalServerError('UNHANDLED_DB_EXCEPTION');
+        }
+    },
 };
