@@ -41,7 +41,6 @@ export const SettingsRepository: SettingsRepositoryContract = {
                 data:  {
                     firstName: data.firstName,
                     lastName:  data.lastName,
-                    username:  data.username,
                 },
             });
 

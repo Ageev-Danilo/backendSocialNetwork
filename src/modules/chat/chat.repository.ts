@@ -6,29 +6,35 @@ import type { ChatRepositoryContract } from './types/chat.contracts';
 
 function buildChatSelect() {
     return {
-        id: true,
-        name: true,
+        id:      true,
+        name:    true,
         isGroup: true,
-        avatar: true,
+        avatar:  true,
         adminId: true,
         users: {
             select: {
-                id: true,
-                email: true,
-                username: true,
+                id:        true,
+                email:     true,
+                firstName: true,
+                lastName:  true,
                 profile: {
-                    select: { profileImage: true },
+                    select: {
+                        profileImage: true,
+                        pseudonym:    true,
+                    },
                 },
             },
         },
     } as const;
 }
 
-function mapChatUsers(users: { id: number; email: string; username: string | null; profile: { profileImage: string | null } | null }[]) {
+function mapChatUsers(users: any[]) {
     return users.map(u => ({
         id:           u.id,
         email:        u.email,
-        username:     u.username,
+        firstName:    u.firstName  ?? null,
+        lastName:     u.lastName   ?? null,
+        username:     u.profile?.pseudonym ?? null,
         profileImage: u.profile?.profileImage ?? null,
     }));
 }
@@ -104,10 +110,11 @@ export const ChatRepository: ChatRepositoryContract = {
                 include: {
                     sender: {
                         select: {
-                            id: true,
-                            email: true,
-                            username: true,
-                            profile: { select: { profileImage: true } },
+                            id:        true,
+                            email:     true,
+                            firstName: true,
+                            lastName:  true,
+                            profile:   { select: { profileImage: true } },
                         },
                     },
                 },
@@ -121,7 +128,8 @@ export const ChatRepository: ChatRepositoryContract = {
                 sender: {
                     id:           m.sender.id,
                     email:        m.sender.email,
-                    username:     m.sender.username ?? null,
+                    firstName:    (m.sender as any).firstName ?? null,
+                    lastName:     (m.sender as any).lastName  ?? null,
                     profileImage: (m.sender as any).profile?.profileImage ?? null,
                 },
             }));

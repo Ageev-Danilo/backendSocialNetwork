@@ -10,9 +10,11 @@ export interface MessageCreateBody {
 }
 
 export interface ChatUser {
-    id: number;
-    email: string;
-    username?: string | null;
+    id:           number;
+    email:        string;
+    firstName:    string | null;
+    lastName:     string | null;
+    username?:    string | null;
     profileImage: string | null;
 }
 
