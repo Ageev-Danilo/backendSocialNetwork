@@ -89,19 +89,32 @@ export const ChatRepository: ChatRepositoryContract = {
 
     async updateChat(chatId, dto) {
         try {
+            const chat = await PrismaClient.chat.findUnique({
+                where: { id: chatId },
+                select: { id: true, isGroup: true, adminId: true },
+            });
+            if (!chat) throw new NotFoundError('Chat');
             const updateData: any = {};
             if (dto.name !== undefined) updateData.name = dto.name;
             if (dto.avatar !== undefined) updateData.avatar = dto.avatar;
-            if (dto.memberIds !== undefined) {
-                updateData.users = { set: dto.memberIds.map((id) => ({ id })) };
-            }
-            const raw = await PrismaClient.chat.update({
+            if (dto.memberIds !== undefined) updateData.users = { set: dto.memberIds.map((id) => ({ id })) };
+            const createData: any = {
+                id: chatId,
+                isGroup: chat.isGroup,
+                adminId: chat.adminId,
+                name: dto.name ?? null,
+                avatar: dto.avatar ?? null,
+            };
+            if (dto.memberIds !== undefined) createData.users = { connect: dto.memberIds.map((id) => ({ id })) };
+            const raw = await PrismaClient.chat.upsert({
                 where: { id: chatId },
-                data: updateData,
+                update: updateData,
+                create: createData,
                 select: buildChatSelect(),
             });
             return mapChat(raw);
         } catch (error) {
+            if (error instanceof NotFoundError) throw error;
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') throw new NotFoundError('Chat');
                 throw new ValidationError('WRONG_QUERY');
@@ -112,8 +125,14 @@ export const ChatRepository: ChatRepositoryContract = {
 
     async deleteChat(chatId) {
         try {
+            const chat = await PrismaClient.chat.findUnique({
+                where: { id: chatId },
+                select: { id: true },
+            });
+            if (!chat) throw new NotFoundError('Chat');
             await PrismaClient.chat.delete({ where: { id: chatId } });
         } catch (error) {
+            if (error instanceof NotFoundError) throw error;
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') throw new NotFoundError('Chat');
                 throw new ValidationError('WRONG_QUERY');
