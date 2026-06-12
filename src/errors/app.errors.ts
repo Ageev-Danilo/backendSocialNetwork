@@ -43,3 +43,9 @@ export class InternalServerError extends AppError {
         super(500, message);
     }
 }
+
+export class ForbiddenError extends AppError {
+    constructor(message: string = 'Access denied') {
+        super(403, message);
+    }
+}
