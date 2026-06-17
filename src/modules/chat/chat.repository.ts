@@ -132,6 +132,7 @@ export const ChatRepository: ChatRepositoryContract = {
             if (!chat) throw new NotFoundError('Chat');
             await PrismaClient.chat.delete({ where: { id: chatId } });
         } catch (error) {
+            console.log(error);
             if (error instanceof NotFoundError) throw error;
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === 'P2025') throw new NotFoundError('Chat');
