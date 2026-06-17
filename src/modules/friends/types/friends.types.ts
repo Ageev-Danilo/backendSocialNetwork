@@ -1,9 +1,11 @@
 export interface ProfilePublic {
     id:               number;
+    userId:           number;
     pseudonym:        string;
+    username:         string | null;
     signature:        string | null;
-    date?:        string | null;
-    profileImage:           string | null;
+    date?:            string | null;
+    profileImage:     string | null;
     isImageSignature: boolean;
     isTextSignature:  boolean;
 }
@@ -23,14 +25,32 @@ export interface FriendRequestWithSender {
     sender:     ProfilePublic;
 }
 
-export interface CreateFriendRequestBody {
-    receiverProfileId: number;
+export interface CreateFriendRequestBody  { receiverProfileId: number; }
+export interface AcceptFriendBody         { senderProfileId:   number; }
+export interface DeleteFriendBody         { contactProfileId:  number; }
+export interface RejectFriendRequestBody  { senderProfileId:   number; }
+
+export interface PublicAlbum {
+    id:     number;
+    name:   string;
+    theme:  string;
+    year:   number;
+    images: { id: number; image: string }[];
 }
 
-export interface AcceptFriendBody {
-    senderProfileId: number;
+export interface PublicPost {
+    id:        number;
+    title:     string;
+    content:   string;
+    createdAt: Date;
+    tags:      { id: number; name: string }[];
+    media:     { id: number; url: string }[];
+    likes:     number;
+    views:     number;
 }
 
-export interface DeleteFriendBody {
-    contactProfileId: number;
+export interface PublicProfileData {
+    profile:  ProfilePublic;
+    albums:   PublicAlbum[];
+    lastPost: PublicPost | null;
 }

@@ -1,13 +1,11 @@
 import { Socket, Server } from 'socket.io';
-
 import { IUserClientEvents } from '../modules/user/types/user.types';
 import { IChatClientEvents } from '../modules/chat/chat.types';
 
+
 export interface IServerToClientEvents {
-    'chat:new-message': (data: { userId: string; message: string }) => void;
-
-    'user:connected': (userId: string) => void;
-
+    'chat:new-message': (data: { userId: string; chatId: string; message: string }) => void;
+    'user:connected':    (userId: string) => void;
     'user:disconnected': (userId: string) => void;
 }
 

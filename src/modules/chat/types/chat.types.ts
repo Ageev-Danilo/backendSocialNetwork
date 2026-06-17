@@ -5,6 +5,12 @@ export interface ChatCreateBody {
     memberIds: number[];
 }
 
+export interface ChatUpdateBody {
+    name?: string | null;
+    avatar?: string | null;
+    memberIds?: number[];
+}
+
 export interface MessageCreateBody {
     text: string;
 }
@@ -12,7 +18,10 @@ export interface MessageCreateBody {
 export interface ChatUser {
     id: number;
     email: string;
+    firstName: string | null;
+    lastName: string | null;
     username?: string | null;
+    profileImage: string | null;
 }
 
 export interface ChatDto {

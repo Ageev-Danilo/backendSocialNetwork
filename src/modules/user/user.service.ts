@@ -53,9 +53,7 @@ export const UserService: UserServiceContract = {
 
     async updateProfile(dto, data: ProfileCredentials) {
         const user = await UserRepository.findById(dto.userId);
-        if (!user) {
-            throw new NotFoundError('User');
-        }
+        if (!user) throw new NotFoundError('User');
 
         const dateValue = data.date;
         const isDate = (value: unknown): value is Date => value instanceof Date;
@@ -65,8 +63,7 @@ export const UserService: UserServiceContract = {
             date: isDate(dateValue) ? dateValue.toISOString() : (dateValue ?? defaultData.date),
         };
 
-        const updatedUser = await UserRepository.updateProfile(dto.userId, updatedData);
-        return updatedUser;
+        return await UserRepository.updateProfile(dto.userId, updatedData);
     },
 
     async getSuggestions(name) {

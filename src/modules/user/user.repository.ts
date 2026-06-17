@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { InternalServerError, ValidationError } from '../../errors/app.errors';
-
+import { Prisma } from '../../generated/prisma';
 import type { UserRepositoryContract } from './types/user.contracts';
 import type {
     ProfileCredentials,
@@ -102,21 +102,20 @@ export const UserRepository: UserRepositoryContract & {
 
     async updateProfile(id, data) {
         try {
-            const profilePayload = {
-                date: data.date ?? null,
-                signature: data.signature,
-                profileImage: data.profileImage ?? null,
-                pseudonym: data.pseudonym,
-            };
-
             return await PrismaClient.profile.upsert({
-                where: {
-                    userId: id,
+                where:  { userId: id },
+                update: {
+                    pseudonym:    data.pseudonym,
+                    signature:    data.signature ?? '',
+                    date:         data.date ?? null,
+                    profileImage: data.profileImage ?? null,
                 },
-                update: profilePayload,
                 create: {
-                    userId: id,
-                    ...profilePayload,
+                    userId:       id,
+                    pseudonym:    data.pseudonym,
+                    signature:    data.signature ?? '',
+                    date:         data.date ?? null,
+                    profileImage: data.profileImage ?? null,
                 },
             });
         } catch (error) {

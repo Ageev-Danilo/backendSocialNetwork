@@ -8,7 +8,17 @@ import type {
     UserCreateInput,
     ProfileCredentials,
 } from './user.types';
-import { Profile } from '../../../generated/prisma';
+
+export type ProfileResult = {
+    id:               number;
+    userId:           number;
+    pseudonym:        string;
+    signature:        string;
+    date:             string | null;
+    profileImage:     string | null;
+    isImageSignature: boolean;
+    isTextSignature:  boolean;
+};
 
 export interface UserControllerContract {
     login(
@@ -46,7 +56,7 @@ export interface UserServiceContract {
     login(dto: LoginCredentials): Promise<{ token: string }>;
     register(dto: RegisterCredentials & { avatar?: string }): Promise<{ token: string }>;
     me(dto: { userId: number }): Promise<User>;
-    updateProfile(dto: { userId: number }, data: ProfileCredentials): Promise<Profile>;
+    updateProfile(dto: { userId: number }, data: ProfileCredentials): Promise<ProfileResult>;
     getSuggestions(name: string): Promise<string>;
 }
 
@@ -55,6 +65,6 @@ export interface UserRepositoryContract {
     findByEmail(email: string): Promise<User | null>;
     create(data: UserCreateInput): Promise<User>;
     findById(id: number): Promise<User>;
-    updateProfile(id: number, data: ProfileCredentials): Promise<Profile>;
+    updateProfile(id: number, data: ProfileCredentials): Promise<ProfileResult>;
     getSuggestions(name: string): Promise<string>;
 }

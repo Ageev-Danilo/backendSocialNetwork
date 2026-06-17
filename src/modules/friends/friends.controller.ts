@@ -6,9 +6,11 @@ import type {
     AcceptFriendBody,
     CreateFriendRequestBody,
     DeleteFriendBody,
+    RejectFriendRequestBody,
 } from './types/friends.types';
 
 export const FriendsController: FriendsControllerContract = {
+
     async getRecommendations(req, res, next) {
         try {
             const profiles = await FriendsService.getRecommendations(res.locals.userId);
@@ -81,6 +83,22 @@ export const FriendsController: FriendsControllerContract = {
         }
     },
 
+    async rejectFriendRequest(
+        req: Request<object, { message: string }, RejectFriendRequestBody, object, AuthenticatedUser>,
+        res: Response<{ message: string }, AuthenticatedUser>,
+        next: NextFunction,
+    ) {
+        try {
+            const result = await FriendsService.rejectFriendRequest(
+                res.locals.userId,
+                req.body.senderProfileId,
+            );
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async getFriendRequests(req, res, next) {
         try {
             const requests = await FriendsService.getFriendRequests(res.locals.userId);
@@ -92,13 +110,9 @@ export const FriendsController: FriendsControllerContract = {
 
     async getPublicProfile(req, res, next) {
         try {
-            const profileId = parseInt(req.params.profileId, 10);
-            if (isNaN(profileId)) {
-                res.status(400).json({ message: 'Invalid profile ID' } as any);
-                return;
-            }
-            const profile = await FriendsService.getPublicProfile(profileId);
-            res.status(200).json(profile);
+            const profileId = Number(req.params.profileId);
+            const data = await FriendsService.getPublicProfile(profileId);
+            res.status(200).json(data);
         } catch (error) {
             next(error);
         }

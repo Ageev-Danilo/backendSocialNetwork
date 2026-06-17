@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AuthenticatedUser } from '../../../types/token.types';
-
 import { SettingsCredentials } from './settings.types';
 
 export interface SettingsControllerContract {
