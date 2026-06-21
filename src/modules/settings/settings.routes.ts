@@ -3,6 +3,7 @@ import { authenticateMiddleware } from '../../middlewares/authenticate.middlewar
 import { uploadMiddleware, processImageMiddleware } from '../../middlewares/upload.middleware';
 import { SettingsController } from './settings.controller';
 
+
 export const SettingsRoutes = Router();
 
 SettingsRoutes.get('/', authenticateMiddleware, SettingsController.getSettings);
@@ -10,7 +11,10 @@ SettingsRoutes.get('/', authenticateMiddleware, SettingsController.getSettings);
 SettingsRoutes.post(
     '/',
     authenticateMiddleware,
-    uploadMiddleware.single('profileImage'), 
+    uploadMiddleware.single('profileImage'),
     processImageMiddleware(false, 400, 85),
     SettingsController.updateSettings,
 );
+
+SettingsRoutes.patch('/email', authenticateMiddleware, SettingsController.updateEmail);
+SettingsRoutes.patch('/password', authenticateMiddleware, SettingsController.updatePassword);

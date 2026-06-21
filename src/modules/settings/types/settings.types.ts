@@ -13,3 +13,11 @@ export interface UpdateSettingsInput extends Omit<SettingsCredentials, 'isImageS
     isImageSignature: boolean | string;
     isTextSignature: boolean | string;
 }
+
+export interface UpdateEmailDto {
+    email: string;
+}
+
+export interface UpdatePasswordDto {
+    password: string;
+}
